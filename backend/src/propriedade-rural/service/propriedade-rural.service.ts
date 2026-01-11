@@ -30,9 +30,14 @@ export class PropriedadeRuralService {
     async create(dto: CreatePropriedadeRuralDto): Promise<PropriedadeRural> {
         const lead = await this.leadRepository.findOne({ where: { id: dto.leadId } });
         if (!lead) throw new NotFoundException('Lead not found');
+        const { distribuidorId, ...rest } = dto;
+
         const propriedade = this.propriedadeRuralRepository.create({
-            ...dto,
+            ...rest,
             lead,
+            ...(typeof distribuidorId === 'number'
+                ? { distribuidor: { id: distribuidorId } as any }
+                : {}),
         });
         return this.propriedadeRuralRepository.save(propriedade);
     }
@@ -94,7 +99,26 @@ export class PropriedadeRuralService {
     }
 
     async update(id: number, dto: UpdatePropriedadeRuralDto, userId: number): Promise<PropriedadeRural> {
-        await this.propriedadeRuralRepository.update(id, dto);
+        // Garante que o usuário tem acesso a esta propriedade
+        const current = await this.findOne(id, userId);
+
+        const { distribuidorId, ...rest } = dto;
+
+        const updated: PropriedadeRural = {
+            ...current,
+            ...rest,
+        } as PropriedadeRural;
+
+        // Se distribuidorId vier no PATCH, atualiza (ou limpa) a relação
+        if (distribuidorId !== undefined) {
+            if (distribuidorId === null) {
+                (updated as any).distribuidor = null;
+            } else {
+                (updated as any).distribuidor = { id: distribuidorId } as any;
+            }
+        }
+
+        await this.propriedadeRuralRepository.save(updated);
         return this.findOne(id, userId);
     }
 

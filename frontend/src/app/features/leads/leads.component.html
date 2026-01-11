@@ -161,6 +161,19 @@
         ></p-select>
       </label>
 
+      <label class="dialog-field">
+        <span>Distribuidor (opcional)</span>
+        <p-select
+          name="distribuidorId"
+          [options]="distribuidores"
+          optionLabel="nome"
+          optionValue="id"
+          placeholder="Selecione o distribuidor"
+          [showClear]="true"
+          [(ngModel)]="formModel.distribuidorId"
+        ></p-select>
+      </label>
+
       <div>
         <h4>{{ editingLead ? 'Propriedade rural do lead' : 'Propriedade rural (obrigatória)' }}</h4>
 

@@ -10,6 +10,7 @@ import { FilterService } from '../../core/services/filter.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PropriedadeRural } from '../../core/models/propriedade-rural.model';
 import { Lead } from '../../core/models/lead.model';
+import { Distribuidor } from '../../core/models/distribuidor.model';
 
 @Component({
   selector: 'app-propriedades',
@@ -42,6 +43,8 @@ export class PropriedadesComponent implements OnInit {
   ufList: { id: number; sigla: string; nome: string }[] = [];
   cidadeFormOptions: { id: number; nome: string }[] = [];
 
+  distribuidores: Distribuidor[] = [];
+
   formModel: Partial<PropriedadeRural> = {
     nome: '',
     cultura: '',
@@ -65,6 +68,7 @@ export class PropriedadesComponent implements OnInit {
   ngOnInit(): void {
     this.load();
     this.loadUfs();
+    this.initDistribuidoresFromUser();
   }
 
   load(): void {
@@ -122,6 +126,7 @@ export class PropriedadesComponent implements OnInit {
       latitude: 0,
       longitude: 0,
       leadId: this.selectedLead.id,
+      distribuidorId: undefined,
     };
 
     if (this.formModel.uf) {
@@ -135,7 +140,16 @@ export class PropriedadesComponent implements OnInit {
 
   edit(prop: PropriedadeRural): void {
     this.editing = prop;
-    this.formModel = { ...prop };
+    this.formModel = {
+      nome: prop.nome,
+      cultura: prop.cultura,
+      hectares: prop.hectares,
+      uf: prop.uf,
+      cidade: prop.cidade,
+      latitude: prop.latitude,
+      longitude: prop.longitude,
+      distribuidorId: prop.distribuidorId ?? undefined,
+    };
 
     if (this.formModel.uf) {
       this.onUfChange(this.formModel.uf);
@@ -146,7 +160,21 @@ export class PropriedadesComponent implements OnInit {
 
   save(): void {
     if (this.editing) {
-      this.api.updatePropriedade(this.editing.id, this.formModel).subscribe({
+      const payload: any = {
+        nome: this.formModel.nome,
+        cultura: this.formModel.cultura,
+        hectares: this.formModel.hectares,
+        uf: this.formModel.uf,
+        cidade: this.formModel.cidade,
+        latitude: this.formModel.latitude,
+        longitude: this.formModel.longitude,
+      };
+
+      if (typeof this.formModel.distribuidorId === 'number') {
+        payload.distribuidorId = this.formModel.distribuidorId;
+      }
+
+      this.api.updatePropriedade(this.editing.id, payload).subscribe({
         next: () => {
           this.dialogVisible = false;
           this.load();
@@ -158,7 +186,22 @@ export class PropriedadesComponent implements OnInit {
         alert('Selecione um lead para criar uma nova propriedade.');
         return;
       }
-      this.api.createPropriedade(this.formModel).subscribe({
+      const payload: any = {
+        nome: this.formModel.nome,
+        cultura: this.formModel.cultura,
+        hectares: this.formModel.hectares,
+        uf: this.formModel.uf,
+        cidade: this.formModel.cidade,
+        latitude: this.formModel.latitude,
+        longitude: this.formModel.longitude,
+        leadId: this.formModel.leadId,
+      };
+
+      if (typeof this.formModel.distribuidorId === 'number') {
+        payload.distribuidorId = this.formModel.distribuidorId;
+      }
+
+      this.api.createPropriedade(payload).subscribe({
         next: () => {
           this.dialogVisible = false;
           this.load();
@@ -194,6 +237,23 @@ export class PropriedadesComponent implements OnInit {
       },
       error: (err) => this.handleError(err, 'Não foi possível carregar a lista de estados.'),
     });
+  }
+
+  private initDistribuidoresFromUser(): void {
+    const user = this.auth.getCurrentUser();
+    if (user?.distribuidor) {
+      this.distribuidores = [
+        {
+          id: user.distribuidor.id,
+          nome: user.distribuidor.nome,
+          cnpj: '',
+          geografia: '',
+          email: '',
+        },
+      ];
+    } else {
+      this.distribuidores = [];
+    }
   }
 
   onUfChange(uf: string): void {

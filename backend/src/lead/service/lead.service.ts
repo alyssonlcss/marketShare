@@ -29,7 +29,7 @@ export class LeadService {
 
     async create(createLeadDto: CreateLeadDto): Promise<Lead> {
         // Garante CPF, email e telefone únicos
-        const { cpf, email, telefone, propriedade, ...leadData } = createLeadDto;
+        const { cpf, email, telefone, propriedade, distribuidorId, ...leadData } = createLeadDto;
 
         const existingCpf = await this.leadRepository.findOne({ where: { cpf } });
         if (existingCpf) {
@@ -50,7 +50,15 @@ export class LeadService {
             }
         }
 
-        const lead = this.leadRepository.create({ ...leadData, cpf, email, telefone });
+        const lead = this.leadRepository.create({
+            ...leadData,
+            cpf,
+            email,
+            telefone,
+            ...(typeof distribuidorId === 'number'
+                ? { distribuidor: { id: distribuidorId } as any }
+                : {}),
+        });
         const savedLead = await this.leadRepository.save(lead);
 
         // Cria a propriedade rural associada
@@ -178,7 +186,7 @@ export class LeadService {
         }
         await this.findOne(id, userId);
 
-        const { email, telefone, propriedade, ...rest } = updateLeadDto as any;
+        const { email, telefone, propriedade, distribuidorId, ...rest } = updateLeadDto as any;
 
         // Se email for informado e diferente, verifica duplicidade
         if (email && email !== current.email) {
@@ -196,12 +204,24 @@ export class LeadService {
             }
         }
 
-        // Atualiza dados do lead
-        await this.leadRepository.update(id, {
+        // Monta entidade atualizada do lead
+        const updatedLead: Lead = {
+            ...current,
             ...rest,
             email: email ?? current.email,
             telefone: telefone ?? current.telefone,
-        });
+        } as Lead;
+
+        // Atualiza relação de distribuidor se distribuidorId vier no PATCH
+        if (distribuidorId !== undefined) {
+            if (distribuidorId === null) {
+                (updatedLead as any).distribuidor = null;
+            } else {
+                (updatedLead as any).distribuidor = { id: distribuidorId } as any;
+            }
+        }
+
+        await this.leadRepository.save(updatedLead);
 
         // Opcionalmente atualiza a primeira propriedade rural associada, se enviada no PATCH
         if (propriedade) {
@@ -233,7 +253,16 @@ export class LeadService {
 
     async remove(id: number, userId: number): Promise<void> {
         // Só remove se o lead pertencer ao distribuidor do usuário (ou estiver acessível pelas regras de filtro)
-        const lead = await this.findOne(id, userId);
-        await this.leadRepository.remove(lead);
+        await this.findOne(id, userId);
+
+        // Remove primeiro as propriedades rurais associadas a este lead para não violar FK
+        await this.propriedadeRepository
+            .createQueryBuilder()
+            .delete()
+            .where('leadId = :id', { id })
+            .execute();
+
+        // Depois remove o próprio lead
+        await this.leadRepository.delete(id);
     }
 }

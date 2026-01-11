@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Lead } from '../models/lead.model';
 import { PropriedadeRural } from '../models/propriedade-rural.model';
+import { Distribuidor } from '../models/distribuidor.model';
 import { AuthService } from './auth.service';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -53,6 +54,11 @@ export class ApiService {
 
   deletePropriedade(id: number): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/propriedade-rural/${id}`);
+  }
+
+  // Distribuidores
+  getDistribuidores(): Observable<Distribuidor[]> {
+    return this.http.get<Distribuidor[]>(`${API_BASE_URL}/distribuidor`);
   }
 
   // Localização (IBGE)

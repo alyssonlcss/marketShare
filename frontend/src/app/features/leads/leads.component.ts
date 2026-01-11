@@ -9,6 +9,7 @@ import { ApiService } from '../../core/services/api.service';
 import { FilterService } from '../../core/services/filter.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Lead, LeadStatus } from '../../core/models/lead.model';
+import { Distribuidor } from '../../core/models/distribuidor.model';
 
 @Component({
   selector: 'app-leads',
@@ -31,6 +32,8 @@ export class LeadsComponent implements OnInit {
   // Dropdowns UF/cidade para a propriedade criada junto com o lead
   ufList: { id: number; sigla: string; nome: string }[] = [];
   cidadeFormOptions: { id: number; nome: string }[] = [];
+
+  distribuidores: Distribuidor[] = [];
 
   formModel: any = {
     nome: '',
@@ -61,6 +64,7 @@ export class LeadsComponent implements OnInit {
   ngOnInit(): void {
     this.loadLeads();
     this.loadUfs();
+    this.initDistribuidoresFromUser();
   }
 
   loadLeads(): void {
@@ -86,6 +90,7 @@ export class LeadsComponent implements OnInit {
       telefone: '',
       status: 'novo',
       comentario: '',
+      distribuidorId: undefined,
       propriedade: {
         nome: '',
         cultura: '',
@@ -112,6 +117,7 @@ export class LeadsComponent implements OnInit {
       telefone: lead.telefone || '',
       status: lead.status,
       comentario: lead.comentario || '',
+      distribuidorId: lead.distribuidorId ?? undefined,
       propriedade: {
         nome: firstProp?.nome || '',
         cultura: firstProp?.cultura || '',
@@ -140,6 +146,10 @@ export class LeadsComponent implements OnInit {
         email: this.formModel.email,
         telefone: this.formModel.telefone,
       };
+
+      if (typeof this.formModel.distribuidorId === 'number') {
+        payload.distribuidorId = this.formModel.distribuidorId;
+      }
 
       if (this.formModel.propriedade) {
         payload.propriedade = {
@@ -203,6 +213,23 @@ export class LeadsComponent implements OnInit {
         console.error('Erro ao carregar estados para lead:', err);
       },
     });
+  }
+
+  private initDistribuidoresFromUser(): void {
+    const user = this.auth.getCurrentUser();
+    if (user?.distribuidor) {
+      this.distribuidores = [
+        {
+          id: user.distribuidor.id,
+          nome: user.distribuidor.nome,
+          cnpj: '',
+          geografia: '',
+          email: '',
+        },
+      ];
+    } else {
+      this.distribuidores = [];
+    }
   }
 
   onPropriedadeUfChange(uf: string, preserveCidade = false): void {
