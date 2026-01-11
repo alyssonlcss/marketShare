@@ -7,6 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
+import { FilterService } from '../../core/services/filter.service';
+import { Lead } from '../../core/models/lead.model';
 import { Produto, UnidadeMedida } from '../../core/models/produto.model';
 import { PropriedadeRural } from '../../core/models/propriedade-rural.model';
 
@@ -25,9 +27,12 @@ interface PropriedadeMatch {
 export class ProdutosComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly auth = inject(AuthService);
+  private readonly filterService = inject(FilterService);
 
   readonly produtos = signal<Produto[]>([]);
+  readonly leads = signal<Lead[]>([]);
   readonly propriedades = signal<PropriedadeRural[]>([]);
+  readonly atribuicaoFilter = this.filterService.atribuicaoFilter;
 
   dialogVisible = false;
   editing: Produto | null = null;
@@ -98,12 +103,45 @@ export class ProdutosComponent implements OnInit {
       error: (err) => this.handleError(err, 'Não foi possível carregar os produtos.'),
     });
 
-    this.api.getPropriedades().subscribe({
-      next: (propriedades) => {
-        this.propriedades.set(propriedades);
-      },
-      error: (err) => this.handleError(err, 'Não foi possível carregar as propriedades para matching.'),
-    });
+    const mode = this.filterService.getAtribuicaoFilter();
+
+    // Aplica EXATAMENTE o mesmo padrão da tela de /propriedades:
+    // - Se "atribuído": chama getLeads({ distribuidorId }) e extrai propriedades dos leads retornados.
+    // - Se "não atribuído": chama getLeads() sem distribuidorId e extrai apenas propriedades não atribuídas,
+    //   pois o backend já filtra por distribuidorId nas propriedades de cada lead.
+    if (mode === 'atribuido') {
+      const user = this.auth.getCurrentUser();
+      const distribuidorId = user?.distribuidor?.id;
+      if (distribuidorId) {
+        this.api.getLeads({ distribuidorId }).subscribe({
+          next: (leads) => {
+            this.leads.set(leads);
+            const props: PropriedadeRural[] = [];
+            for (const lead of leads) {
+              if (lead.propriedadesRurais?.length) {
+                props.push(...lead.propriedadesRurais);
+              }
+            }
+            this.propriedades.set(props);
+          },
+          error: (err) => this.handleError(err, 'Não foi possível carregar as propriedades atribuídas para matching.'),
+        });
+      }
+    } else {
+      this.api.getLeads().subscribe({
+        next: (leads) => {
+          this.leads.set(leads);
+          const props: PropriedadeRural[] = [];
+          for (const lead of leads) {
+            if (lead.propriedadesRurais?.length) {
+              props.push(...lead.propriedadesRurais);
+            }
+          }
+          this.propriedades.set(props);
+        },
+        error: (err) => this.handleError(err, 'Não foi possível carregar as propriedades não atribuídas para matching.'),
+      });
+    }
   }
 
   openNew(): void {
