@@ -56,23 +56,16 @@
   gap: 0.75rem;
 }
 
-.dashboard__filter-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.65);
-}
-
 .dashboard ::ng-deep .dashboard__filter-select {
   border-radius: 999px;
   border-width: 1px;
   border-style: solid;
-  min-height: 2.2rem;
+  min-height: 3rem;
 }
 
 .dashboard ::ng-deep .dashboard__filter-select .p-select-label {
-  padding: 0.15rem 0.9rem;
-  font-size: 0.85rem;
+  padding: 0.4rem 1.4rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,16 +81,6 @@
 
 .dashboard ::ng-deep .dashboard__filter-select--atribuido .p-select-label {
   color: var(--agro-lime);
-}
-
-.dashboard ::ng-deep .dashboard__filter-select--nao-atribuido {
-  background: rgba(255, 138, 122, 0.16);
-  border-color: rgba(255, 138, 122, 0.55);
-  color: #ff8a7a;
-}
-
-.dashboard ::ng-deep .dashboard__filter-select--nao-atribuido .p-select-label {
-  color: #ff8a7a;
 }
 
 .dashboard__grid {

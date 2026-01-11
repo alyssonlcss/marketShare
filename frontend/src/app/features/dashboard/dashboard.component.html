@@ -14,12 +14,10 @@
         <span class="tag-pill">{{ filteredPropriedades().length }} propriedades</span>
       </div>
       <div class="dashboard__filter-box">
-        <span class="dashboard__filter-label">Atribuição</span>
         <p-select
           class="dashboard__filter-select"
           [ngClass]="{
-            'dashboard__filter-select--atribuido': atribuicaoFilter() === 'atribuido',
-            'dashboard__filter-select--nao-atribuido': atribuicaoFilter() === 'nao_atribuido'
+            'dashboard__filter-select--atribuido': atribuicaoFilter() === 'atribuido'
           }"
           [options]="atribuicaoOptions"
           optionLabel="label"
@@ -72,6 +70,7 @@
           <label>
             <span>Área mínima</span>
             <p-select
+                class="dashboard__filter-select"
               [options]="priorityOptions"
               optionLabel="label"
               optionValue="value"
