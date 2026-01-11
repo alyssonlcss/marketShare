@@ -14,17 +14,21 @@
         <span class="tag-pill">{{ filteredPropriedades().length }} propriedades</span>
       </div>
       <div class="dashboard__filter-box">
-        <label>
-          <p-select
-            [options]="atribuicaoOptions"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Filtrar atribuição"
-            [showClear]="true"
-            [ngModel]="atribuicaoFilter()"
-            (onChange)="changeAtribuicaoFilter($event.value)"
-          ></p-select>
-        </label>
+        <span class="dashboard__filter-label">Atribuição</span>
+        <p-select
+          class="dashboard__filter-select"
+          [ngClass]="{
+            'dashboard__filter-select--atribuido': atribuicaoFilter() === 'atribuido',
+            'dashboard__filter-select--nao-atribuido': atribuicaoFilter() === 'nao_atribuido'
+          }"
+          [options]="atribuicaoOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Filtrar atribuição"
+          [showClear]="true"
+          [ngModel]="atribuicaoFilter()"
+          (onChange)="changeAtribuicaoFilter($event.value)"
+        ></p-select>
       </div>
     </div>
   </header>
