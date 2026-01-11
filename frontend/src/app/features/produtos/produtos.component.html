@@ -1,0 +1,200 @@
+<section class="module-shell produtos-shell">
+  <header class="module-shell__header">
+    <div>
+      <span class="eyebrow">Portfólio</span>
+      <h1>Catálogo de Produtos</h1>
+      <p class="module-subtitle">
+        Gerencie o portfólio do distribuidor e veja quais propriedades têm aderência às categorias ofertadas.
+      </p>
+    </div>
+    <button type="button" class="module-primary-btn" (click)="openNew()">Novo produto</button>
+  </header>
+
+  <p-table
+    #dtProdutos
+    class="produtos-table"
+    [value]="produtos()"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first} - {last} de {totalRecords} produtos"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="nome">
+          Nome
+          <p-sortIcon field="nome"></p-sortIcon>
+        </th>
+        <th>
+          Categorias
+        </th>
+        <th pSortableColumn="unidadeMedida">
+          Unidade
+          <p-sortIcon field="unidadeMedida"></p-sortIcon>
+        </th>
+        <th pSortableColumn="custoUnidade">
+          Custo / unidade
+          <p-sortIcon field="custoUnidade"></p-sortIcon>
+        </th>
+        <th class="actions-col">Ações</th>
+      </tr>
+      <tr>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProdutos.filter($any($event.target).value, 'nome', 'contains')"
+            placeholder="Filtrar nome"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProdutos.filter($any($event.target).value, 'categoria', 'contains')"
+            placeholder="Filtrar categoria"
+          />
+        </th>
+        <th>
+          <p-select
+            [options]="unidadeMedidaOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Filtrar unidade"
+            [showClear]="true"
+            (onChange)="dtProdutos.filter($event.value, 'unidadeMedida', 'equals')"
+          ></p-select>
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProdutos.filter($any($event.target).value, 'custoUnidade', 'contains')"
+            placeholder="Filtrar custo"
+          />
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-produto>
+      <tr>
+        <td>{{ produto.nome }}</td>
+        <td>{{ produto.categoria?.join(', ') || '—' }}</td>
+        <td>{{ produto.unidadeMedida }}</td>
+        <td>{{ produto.custoUnidade | number: '1.2-2' }}</td>
+        <td class="actions">
+          <button type="button" class="text-btn" (click)="edit(produto)">Editar</button>
+          <button type="button" class="text-btn text-btn--danger" (click)="delete(produto)">Excluir</button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <section class="matches-section" *ngIf="matchesByPropriedade().length">
+    <header class="matches-section__header">
+      <div>
+        <span class="eyebrow">Aderência</span>
+        <h2>Propriedades com match de cultura</h2>
+        <p class="module-subtitle">
+          Para cada propriedade rural, veja em quais produtos a cultura informada se encaixa pelas categorias cadastradas.
+        </p>
+      </div>
+    </header>
+
+    <p-table
+      #dtMatches
+      class="matches-table"
+      [value]="matchesByPropriedade()"
+      [paginator]="true"
+      [rows]="10"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords} propriedades com match"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Propriedade</th>
+          <th>Cultura</th>
+          <th>Localização</th>
+          <th>Produtos compatíveis</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>{{ item.propriedade.nome }}</td>
+          <td>{{ item.propriedade.cultura }}</td>
+          <td>{{ item.propriedade.cidade }}/{{ item.propriedade.uf }}</td>
+          <td>
+            <span class="chip" *ngFor="let p of item.produtos">{{ p.nome }}</span>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </section>
+
+  <p-dialog
+    [(visible)]="dialogVisible"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '640px' }"
+    [contentStyle]="{
+      background: 'rgba(6,18,13,0.95)',
+      borderRadius: '20px',
+      'min-height': '70vh',
+      'max-height': '90vh',
+      'overflow-y': 'auto'
+    }"
+    [header]="editing ? 'Editar Produto' : 'Novo Produto'"
+  >
+    <form (ngSubmit)="save()" #produtoForm="ngForm" class="dialog-form">
+      <label class="dialog-field">
+        <span>Nome</span>
+        <input type="text" name="nome" required [(ngModel)]="formModel.nome" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Categorias (separe por vírgula)</span>
+        <input type="text" name="categoria" [(ngModel)]="categoriaTexto" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Unidade de medida</span>
+        <p-select
+          name="unidadeMedida"
+          [options]="unidadeMedidaOptions"
+          optionLabel="label"
+          optionValue="value"
+          required
+          [(ngModel)]="formModel.unidadeMedida"
+        ></p-select>
+      </label>
+
+      <label class="dialog-field">
+        <span>Custo por unidade</span>
+        <input type="number" min="0" step="0.01" name="custoUnidade" required [(ngModel)]="formModel.custoUnidade" />
+      </label>
+
+      <div class="dialog-actions">
+        <button type="button" class="text-btn" (click)="dialogVisible = false">Cancelar</button>
+        <button type="submit" class="module-primary-btn" [disabled]="produtoForm.invalid">Salvar</button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <p-dialog
+    [(visible)]="errorDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [style]="{ width: '420px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    header="Ocorreu um erro"
+  >
+    <div class="dialog-form">
+      <p>{{ errorMessage }}</p>
+      <div class="dialog-actions">
+        <button type="button" class="module-primary-btn" (click)="errorDialogVisible = false">OK</button>
+      </div>
+    </div>
+  </p-dialog>
+</section>

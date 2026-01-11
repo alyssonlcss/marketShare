@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Lead } from '../models/lead.model';
 import { PropriedadeRural } from '../models/propriedade-rural.model';
 import { Distribuidor } from '../models/distribuidor.model';
+import { Produto } from '../models/produto.model';
 import { AuthService } from './auth.service';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -54,6 +55,23 @@ export class ApiService {
 
   deletePropriedade(id: number): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/propriedade-rural/${id}`);
+  }
+
+  // Produtos
+  getProdutos(): Observable<Produto[]> {
+    return this.http.get<Produto[]>(`${API_BASE_URL}/produto`);
+  }
+
+  createProduto(payload: Partial<Produto> & { distribuidorId: number }): Observable<Produto> {
+    return this.http.post<Produto>(`${API_BASE_URL}/produto`, payload);
+  }
+
+  updateProduto(id: number, payload: Partial<Produto>): Observable<Produto> {
+    return this.http.patch<Produto>(`${API_BASE_URL}/produto/${id}`, payload);
+  }
+
+  deleteProduto(id: number): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/produto/${id}`);
   }
 
   // Distribuidores
