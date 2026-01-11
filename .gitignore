@@ -67,6 +67,7 @@ Thumbs.db
 .temp
 .tmp
 **/.cache
+frontend/test-results
 
 # ESLint cache
 .eslintcache

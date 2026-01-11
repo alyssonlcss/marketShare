@@ -16,8 +16,28 @@ class ApiServiceMock {
 
   getPropriedades() {
     const props: PropriedadeRural[] = [
-      { id: 1, cultura: 'Soja', hectares: 150, uf: 'GO', cidade: 'Rio Verde', latitude: -17, longitude: -50, leadId: 1 },
-      { id: 2, cultura: 'Milho', hectares: 80, uf: 'GO', cidade: 'Rio Verde', latitude: -17.1, longitude: -50.1, leadId: 2 },
+      {
+        id: 1,
+        nome: 'Fazenda 1',
+        cultura: 'Soja',
+        hectares: 150,
+        uf: 'GO',
+        cidade: 'Rio Verde',
+        latitude: -17,
+        longitude: -50,
+        leadId: 1,
+      },
+      {
+        id: 2,
+        nome: 'Fazenda 2',
+        cultura: 'Milho',
+        hectares: 80,
+        uf: 'GO',
+        cidade: 'Rio Verde',
+        latitude: -17.1,
+        longitude: -50.1,
+        leadId: 2,
+      },
     ];
     return of(props);
   }
