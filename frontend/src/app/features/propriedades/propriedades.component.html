@@ -25,6 +25,10 @@
   >
     <ng-template pTemplate="header">
       <tr>
+        <th pSortableColumn="nome">
+          Nome
+          <p-sortIcon field="nome"></p-sortIcon>
+        </th>
         <th pSortableColumn="cultura">
           Cultura
           <p-sortIcon field="cultura"></p-sortIcon>
@@ -52,6 +56,14 @@
         <th class="actions-col">Ações</th>
       </tr>
       <tr>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProps.filter($any($event.target).value, 'nome', 'contains')"
+            placeholder="Filtrar nome"
+          />
+        </th>
         <th>
           <input
             pInputText
@@ -107,6 +119,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-prop>
       <tr>
+        <td>{{ prop.nome }}</td>
         <td>{{ prop.cultura }}</td>
         <td>{{ prop.hectares }}</td>
         <td>{{ prop.uf }}</td>
@@ -129,6 +142,11 @@
     [header]="editing ? 'Editar Propriedade' : 'Nova Propriedade'"
   >
     <form (ngSubmit)="save()" #propForm="ngForm" class="dialog-form">
+      <label class="dialog-field">
+        <span>Nome</span>
+        <input type="text" name="nome" required [(ngModel)]="formModel.nome" />
+      </label>
+
       <label class="dialog-field">
         <span>Cultura</span>
         <input type="text" name="cultura" required [(ngModel)]="formModel.cultura" />

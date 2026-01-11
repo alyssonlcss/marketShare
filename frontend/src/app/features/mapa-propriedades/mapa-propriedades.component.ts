@@ -33,10 +33,13 @@ export class MapaPropriedadesComponent implements OnChanges {
       (p) => typeof p.latitude === 'number' && typeof p.longitude === 'number',
     );
 
-    this.markers = validProps.map((p) => ({
-      position: { lat: p.latitude, lng: p.longitude },
-      title: `${p.cultura} - ${p.cidade}/${p.uf}`,
-    }));
+    this.markers = validProps.map((p) => {
+      const label = p.nome || p.cultura;
+      return {
+        position: { lat: p.latitude, lng: p.longitude },
+        title: `${label} - ${p.cultura} - ${p.cidade}/${p.uf}`,
+      };
+    });
 
     if (validProps.length > 0) {
       const latSum = validProps.reduce((sum, p) => sum + p.latitude, 0);

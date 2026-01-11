@@ -7,6 +7,9 @@ export class PropriedadeRural {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  nome?: string;
+
   @Column()
   cultura: string;
 

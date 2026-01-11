@@ -4,6 +4,10 @@ import { Transform } from 'class-transformer';
 export class CreatePropriedadeRuralDto {
 	@IsString()
 	@IsNotEmpty()
+	nome: string;
+
+	@IsString()
+	@IsNotEmpty()
 	cultura: string;
 
 	@IsNumber()

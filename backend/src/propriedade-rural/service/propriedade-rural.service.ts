@@ -49,6 +49,9 @@ export class PropriedadeRuralService {
         if (filters.cultura) {
             qb.andWhere('LOWER(pr.cultura) LIKE LOWER(:cultura)', { cultura: `%${filters.cultura}%` });
         }
+        if (filters.nome) {
+            qb.andWhere('LOWER(pr.nome) LIKE LOWER(:nome)', { nome: `%${filters.nome}%` });
+        }
         if (typeof filters.hectares === 'number') {
             qb.andWhere('pr.hectares = :hectares', { hectares: filters.hectares });
         }

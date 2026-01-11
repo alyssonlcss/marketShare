@@ -40,6 +40,7 @@ export class LeadService {
         const qb = this.leadRepository
             .createQueryBuilder('lead')
             .leftJoinAndSelect('lead.propriedadesRurais', 'pr')
+            .leftJoinAndSelect('pr.distribuidor', 'prDist')
             .leftJoinAndSelect('lead.distribuidor', 'd');
 
         // Cenário 1: Atribuído (distribuidorId enviado como parâmetro)
@@ -81,11 +82,13 @@ export class LeadService {
 
                 // Aplica o mesmo filtro de cenário nas propriedades
                 if (typeof filters.distribuidorId === 'number') {
-                    // Atribuído: apenas propriedades com este distribuidorId
-                    filteredProperties = filteredProperties.filter((p) => p.distribuidorId === filters.distribuidorId);
+                    // Atribuído: apenas propriedades cujo distribuidor relacionado tem este id
+                    filteredProperties = filteredProperties.filter(
+                        (p) => p.distribuidor && p.distribuidor.id === filters.distribuidorId,
+                    );
                 } else {
-                    // Não atribuído: apenas propriedades sem distribuidorId
-                    filteredProperties = filteredProperties.filter((p) => !p.distribuidorId || p.distribuidorId === null);
+                    // Não atribuído: apenas propriedades sem distribuidor associado
+                    filteredProperties = filteredProperties.filter((p) => !p.distribuidor);
                 }
 
                 // Retorna apenas leads que tem propriedades após filtrar

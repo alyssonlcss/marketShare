@@ -1,5 +1,6 @@
 export interface PropriedadeRural {
   id: number;
+  nome: string;
   cultura: string;
   hectares: number;
   uf: string;

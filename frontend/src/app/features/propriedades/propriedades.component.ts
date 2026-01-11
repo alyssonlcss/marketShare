@@ -29,6 +29,7 @@ export class PropriedadesComponent implements OnInit {
   editing: PropriedadeRural | null = null;
 
   formModel: Partial<PropriedadeRural> = {
+    nome: '',
     cultura: '',
     hectares: 0,
     uf: '',
@@ -86,6 +87,7 @@ export class PropriedadesComponent implements OnInit {
   openNew(): void {
     this.editing = null;
     this.formModel = {
+      nome: '',
       cultura: '',
       hectares: 0,
       uf: '',
