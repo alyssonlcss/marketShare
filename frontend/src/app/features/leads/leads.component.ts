@@ -28,12 +28,26 @@ export class LeadsComponent implements OnInit {
   dialogVisible = false;
   editingLead: Lead | null = null;
 
-  formModel: Partial<Lead> = {
+  // Dropdowns UF/cidade para a propriedade criada junto com o lead
+  ufList: { id: number; sigla: string; nome: string }[] = [];
+  cidadeFormOptions: { id: number; nome: string }[] = [];
+
+  formModel: any = {
     nome: '',
     cpf: '',
     email: '',
     telefone: '',
     status: 'novo',
+    comentario: '',
+    propriedade: {
+      nome: '',
+      cultura: '',
+      hectares: 0,
+      uf: '',
+      cidade: '',
+      latitude: 0,
+      longitude: 0,
+    },
   };
 
   readonly statusOptions: { label: string; value: LeadStatus }[] = [
@@ -46,6 +60,7 @@ export class LeadsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadLeads();
+    this.loadUfs();
   }
 
   loadLeads(): void {
@@ -70,19 +85,75 @@ export class LeadsComponent implements OnInit {
       email: '',
       telefone: '',
       status: 'novo',
+      comentario: '',
+      propriedade: {
+        nome: '',
+        cultura: '',
+        hectares: 0,
+        uf: '',
+        cidade: '',
+        latitude: 0,
+        longitude: 0,
+      },
     };
+    this.cidadeFormOptions = [];
     this.dialogVisible = true;
   }
 
   editLead(lead: Lead): void {
     this.editingLead = lead;
-    this.formModel = { ...lead };
+
+    const firstProp = lead.propriedadesRurais && lead.propriedadesRurais.length > 0 ? lead.propriedadesRurais[0] : undefined;
+
+    this.formModel = {
+      nome: lead.nome,
+      cpf: '',
+      email: lead.email || '',
+      telefone: lead.telefone || '',
+      status: lead.status,
+      comentario: lead.comentario || '',
+      propriedade: {
+        nome: firstProp?.nome || '',
+        cultura: firstProp?.cultura || '',
+        hectares: firstProp?.hectares ?? 0,
+        uf: firstProp?.uf || '',
+        cidade: firstProp?.cidade || '',
+        latitude: firstProp?.latitude ?? 0,
+        longitude: firstProp?.longitude ?? 0,
+      },
+    };
+
+    this.cidadeFormOptions = [];
+    if (this.formModel.propriedade.uf) {
+      this.onPropriedadeUfChange(this.formModel.propriedade.uf, true);
+    }
+
     this.dialogVisible = true;
   }
 
   save(): void {
     if (this.editingLead) {
-      this.api.updateLead(this.editingLead.id, this.formModel).subscribe(() => {
+      const payload: any = {
+        nome: this.formModel.nome,
+        status: this.formModel.status,
+        comentario: this.formModel.comentario,
+        email: this.formModel.email,
+        telefone: this.formModel.telefone,
+      };
+
+      if (this.formModel.propriedade) {
+        payload.propriedade = {
+          nome: this.formModel.propriedade.nome,
+          cultura: this.formModel.propriedade.cultura,
+          hectares: this.formModel.propriedade.hectares,
+          uf: this.formModel.propriedade.uf,
+          cidade: this.formModel.propriedade.cidade,
+          latitude: this.formModel.propriedade.latitude,
+          longitude: this.formModel.propriedade.longitude,
+        };
+      }
+
+      this.api.updateLead(this.editingLead.id, payload).subscribe(() => {
         this.dialogVisible = false;
         this.loadLeads();
       });
@@ -94,8 +165,62 @@ export class LeadsComponent implements OnInit {
     }
   }
 
+  onCpfBlur(): void {
+    const raw = this.formModel.cpf || '';
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length === 11) {
+      this.formModel.cpf = digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    } else {
+      this.formModel.cpf = raw;
+    }
+  }
+
+  onTelefoneBlur(): void {
+    const raw = this.formModel.telefone || '';
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length === 10) {
+      // Formato fixo: (99) 9999-9999
+      this.formModel.telefone = digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else if (digits.length === 11) {
+      // Formato celular: (99) 99999-9999
+      this.formModel.telefone = digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else {
+      this.formModel.telefone = raw;
+    }
+  }
+
   deleteLead(lead: Lead): void {
     if (!confirm(`Deseja remover o lead "${lead.nome}"?`)) return;
     this.api.deleteLead(lead.id).subscribe(() => this.loadLeads());
+  }
+
+  private loadUfs(): void {
+    this.api.getEstados().subscribe({
+      next: (ufs) => {
+        this.ufList = ufs.sort((a, b) => a.nome.localeCompare(b.nome));
+      },
+      error: (err) => {
+        console.error('Erro ao carregar estados para lead:', err);
+      },
+    });
+  }
+
+  onPropriedadeUfChange(uf: string, preserveCidade = false): void {
+    if (!preserveCidade) {
+      this.formModel.propriedade.cidade = '';
+    }
+    if (!uf) {
+      this.cidadeFormOptions = [];
+      return;
+    }
+
+    this.api.getCidadesPorUf(uf).subscribe({
+      next: (cidades) => {
+        this.cidadeFormOptions = cidades.sort((a, b) => a.nome.localeCompare(b.nome));
+      },
+      error: (err) => {
+        console.error('Erro ao carregar cidades para lead:', err);
+      },
+    });
   }
 }

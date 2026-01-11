@@ -167,8 +167,10 @@
   <p-dialog
     [(visible)]="dialogVisible"
     [modal]="true"
-    [style]="{ width: '480px' }"
-    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '640px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px', 'min-height': '70vh', 'max-height': '90vh', 'overflow-y': 'auto' }"
     [header]="editing ? 'Editar Propriedade' : 'Nova Propriedade'"
   >
     <form (ngSubmit)="save()" #propForm="ngForm" class="dialog-form">

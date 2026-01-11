@@ -111,8 +111,10 @@
   <p-dialog
     [(visible)]="dialogVisible"
     [modal]="true"
-    [style]="{ width: '420px' }"
-    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '640px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px', 'min-height': '70vh', 'max-height': '90vh', 'overflow-y': 'auto' }"
     [header]="editingLead ? 'Editar Lead' : 'Novo Lead'"
   >
     <form (ngSubmit)="save()" #leadForm="ngForm" class="dialog-form">
@@ -123,17 +125,29 @@
 
       <label class="dialog-field" *ngIf="!editingLead">
         <span>CPF</span>
-        <input type="text" name="cpf" required [(ngModel)]="formModel.cpf" />
+        <input type="text" name="cpf" required [(ngModel)]="formModel.cpf" (blur)="onCpfBlur()" />
       </label>
 
       <label class="dialog-field">
         <span>Email</span>
-        <input type="email" name="email" [(ngModel)]="formModel.email" />
+        <input type="email" name="email" required [(ngModel)]="formModel.email" />
       </label>
 
       <label class="dialog-field">
         <span>Telefone</span>
-        <input type="text" name="telefone" [(ngModel)]="formModel.telefone" />
+        <input
+          type="text"
+          name="telefone"
+          required
+          pattern="^[+0-9 ()-]{10,20}$"
+          [(ngModel)]="formModel.telefone"
+          (blur)="onTelefoneBlur()"
+        />
+      </label>
+
+      <label class="dialog-field">
+        <span>Comentário</span>
+        <input type="text" name="comentario" [(ngModel)]="formModel.comentario" />
       </label>
 
       <label class="dialog-field">
@@ -146,6 +160,99 @@
           [(ngModel)]="formModel.status"
         ></p-select>
       </label>
+
+      <div>
+        <h4>{{ editingLead ? 'Propriedade rural do lead' : 'Propriedade rural (obrigatória)' }}</h4>
+
+        <label class="dialog-field">
+          <span>Nome da propriedade</span>
+          <input
+            type="text"
+            name="propNome"
+            [required]="!editingLead"
+            [(ngModel)]="formModel.propriedade.nome"
+          />
+        </label>
+
+        <label class="dialog-field">
+          <span>Cultura</span>
+          <input
+            type="text"
+            name="propCultura"
+            [required]="!editingLead"
+            [(ngModel)]="formModel.propriedade.cultura"
+          />
+        </label>
+
+        <label class="dialog-field">
+          <span>Hectares</span>
+          <input
+            type="number"
+            name="propHectares"
+            [required]="!editingLead"
+            min="0"
+            [(ngModel)]="formModel.propriedade.hectares"
+          />
+        </label>
+
+        <label class="dialog-field">
+          <span>UF</span>
+          <p-select
+            name="propUf"
+            [options]="ufList"
+            optionLabel="nome"
+            optionValue="sigla"
+            placeholder="Selecione o estado"
+            [showClear]="true"
+            [required]="!editingLead"
+            [(ngModel)]="formModel.propriedade.uf"
+            (onChange)="onPropriedadeUfChange($event.value)"
+          ></p-select>
+        </label>
+
+        <label class="dialog-field">
+          <span>Cidade</span>
+          <p-select
+            name="propCidade"
+            [options]="cidadeFormOptions"
+            optionLabel="nome"
+            optionValue="nome"
+            placeholder="Selecione a cidade"
+            [showClear]="true"
+            [filter]="true"
+            filterPlaceholder="Buscar cidade"
+            [required]="!editingLead"
+            [(ngModel)]="formModel.propriedade.cidade"
+          ></p-select>
+        </label>
+
+        <div class="dialog-field__grid">
+          <label class="dialog-field">
+            <span>Latitude</span>
+            <input
+              type="number"
+              name="propLatitude"
+              [required]="!editingLead"
+              min="-90"
+              max="90"
+              step="0.000001"
+              [(ngModel)]="formModel.propriedade.latitude"
+            />
+          </label>
+          <label class="dialog-field">
+            <span>Longitude</span>
+            <input
+              type="number"
+              name="propLongitude"
+              [required]="!editingLead"
+              min="-180"
+              max="180"
+              step="0.000001"
+              [(ngModel)]="formModel.propriedade.longitude"
+            />
+          </label>
+        </div>
+      </div>
 
       <div class="dialog-actions">
         <button type="button" class="text-btn" (click)="dialogVisible = false">Cancelar</button>

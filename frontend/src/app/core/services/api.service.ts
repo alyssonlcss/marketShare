@@ -22,7 +22,7 @@ export class ApiService {
     return this.http.get<Lead[]>(`${API_BASE_URL}/lead`, { params: httpParams });
   }
 
-  createLead(payload: Partial<Lead>): Observable<Lead> {
+  createLead(payload: any): Observable<Lead> {
     return this.http.post<Lead>(`${API_BASE_URL}/lead`, payload);
   }
 

@@ -6,6 +6,7 @@ import { CreateLeadDto } from '../dto/create-lead.dto';
 import { UpdateLeadDto } from '../dto/update-lead.dto';
 import { User } from '../../user/entity/user.entity';
 import { FilterLeadDto } from '../dto/filter-lead.dto';
+import { PropriedadeRural } from '../../propriedade-rural/entity/propriedade-rural.entity';
 
 @Injectable()
 export class LeadService {
@@ -14,6 +15,8 @@ export class LeadService {
         private readonly leadRepository: Repository<Lead>,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        @InjectRepository(PropriedadeRural)
+        private readonly propriedadeRepository: Repository<PropriedadeRural>,
     ) {}
 
     private async getUserDistribuidorId(userId: number): Promise<number> {
@@ -25,13 +28,49 @@ export class LeadService {
     }
 
     async create(createLeadDto: CreateLeadDto): Promise<Lead> {
-        // Garante CPF único
-        const existing = await this.leadRepository.findOne({ where: { cpf: createLeadDto.cpf } });
-        if (existing) {
+        // Garante CPF, email e telefone únicos
+        const { cpf, email, telefone, propriedade, ...leadData } = createLeadDto;
+
+        const existingCpf = await this.leadRepository.findOne({ where: { cpf } });
+        if (existingCpf) {
             throw new ConflictException('CPF já cadastrado para outro lead');
         }
-        const lead = this.leadRepository.create(createLeadDto);
-        return this.leadRepository.save(lead);
+
+        if (email) {
+            const existingEmail = await this.leadRepository.findOne({ where: { email } });
+            if (existingEmail) {
+                throw new ConflictException('Email já cadastrado para outro lead');
+            }
+        }
+
+        if (telefone) {
+            const existingTelefone = await this.leadRepository.findOne({ where: { telefone } });
+            if (existingTelefone) {
+                throw new ConflictException('Telefone já cadastrado para outro lead');
+            }
+        }
+
+        const lead = this.leadRepository.create({ ...leadData, cpf, email, telefone });
+        const savedLead = await this.leadRepository.save(lead);
+
+        // Cria a propriedade rural associada
+        const propriedadeEntity = this.propriedadeRepository.create({
+            ...propriedade,
+            lead: savedLead,
+        });
+        await this.propriedadeRepository.save(propriedadeEntity);
+
+        // Retorna o lead com suas propriedades carregadas
+        const reloaded = await this.leadRepository.findOne({
+            where: { id: savedLead.id },
+            relations: ['propriedadesRurais'],
+        });
+
+        if (!reloaded) {
+            throw new NotFoundException('Lead not found after creation');
+        }
+
+        return reloaded;
     }
 
     async findAll(userId: number, filters: FilterLeadDto = {}): Promise<any[]> {
@@ -133,8 +172,62 @@ export class LeadService {
 
     async update(id: number, updateLeadDto: UpdateLeadDto, userId: number): Promise<Lead> {
         // Garante que o lead pertence ao distribuidor do usuário logado
+        const current = await this.leadRepository.findOne({ where: { id } });
+        if (!current) {
+            throw new NotFoundException('Lead not found');
+        }
         await this.findOne(id, userId);
-        await this.leadRepository.update(id, updateLeadDto);
+
+        const { email, telefone, propriedade, ...rest } = updateLeadDto as any;
+
+        // Se email for informado e diferente, verifica duplicidade
+        if (email && email !== current.email) {
+            const existingEmail = await this.leadRepository.findOne({ where: { email } });
+            if (existingEmail && existingEmail.id !== id) {
+                throw new ConflictException('Email já cadastrado para outro lead');
+            }
+        }
+
+        // Se telefone for informado e diferente, verifica duplicidade
+        if (telefone && telefone !== current.telefone) {
+            const existingTelefone = await this.leadRepository.findOne({ where: { telefone } });
+            if (existingTelefone && existingTelefone.id !== id) {
+                throw new ConflictException('Telefone já cadastrado para outro lead');
+            }
+        }
+
+        // Atualiza dados do lead
+        await this.leadRepository.update(id, {
+            ...rest,
+            email: email ?? current.email,
+            telefone: telefone ?? current.telefone,
+        });
+
+        // Opcionalmente atualiza a primeira propriedade rural associada, se enviada no PATCH
+        if (propriedade) {
+            const propriedades = await this.propriedadeRepository.find({
+                where: { lead: { id } },
+                order: { id: 'ASC' },
+            });
+
+            const propriedadeAtual = propriedades[0];
+            if (propriedadeAtual) {
+                const updatePayload: Partial<PropriedadeRural> = {};
+
+                if (propriedade.nome !== undefined) updatePayload.nome = propriedade.nome;
+                if (propriedade.cultura !== undefined) updatePayload.cultura = propriedade.cultura;
+                if (propriedade.hectares !== undefined) updatePayload.hectares = propriedade.hectares;
+                if (propriedade.uf !== undefined) updatePayload.uf = propriedade.uf;
+                if (propriedade.cidade !== undefined) updatePayload.cidade = propriedade.cidade;
+                if (propriedade.latitude !== undefined) updatePayload.latitude = propriedade.latitude;
+                if (propriedade.longitude !== undefined) updatePayload.longitude = propriedade.longitude;
+
+                if (Object.keys(updatePayload).length > 0) {
+                    await this.propriedadeRepository.update(propriedadeAtual.id, updatePayload);
+                }
+            }
+        }
+
         return this.findOne(id, userId);
     }
 
