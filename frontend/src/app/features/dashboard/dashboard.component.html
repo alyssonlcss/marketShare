@@ -126,7 +126,7 @@
         </div>
         <span class="panel__meta">Atualizado automaticamente</span>
       </div>
-      <app-mapa-propriedades [propriedades]="filteredPropriedades()"></app-mapa-propriedades>
+      <app-mapa-propriedades [propriedades]="propriedadesMapa()"></app-mapa-propriedades>
     </article>
 
     <!-- Painel: Concentração Territorial -->
@@ -141,12 +141,38 @@
       <div class="municipios-list-scroll" (scroll)="onMunicipiosScroll($event)">
         <ul class="municipios-list">
           @for (item of municipiosPaginados(); track item.municipio) {
-            <li class="municipios-list__item">
+            <li class="municipios-list__item" (click)="toggleMunicipioDetails(item.municipio)">
               <div class="municipios-list__badge">{{ item.count }}</div>
               <div class="municipios-list__content">
                 <p class="municipios-list__name">{{ item.municipio }}</p>
               </div>
             </li>
+            @if (selectedMunicipio() === item.municipio) {
+              <li class="municipios-list__details">
+                <p-table [value]="detalhesMunicipioSelecionado()" [paginator]="false">
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Propriedade</th>
+                      <th>Cultura</th>
+                      <th>Área (ha)</th>
+                      <th>Lead</th>
+                      <th>Telefone</th>
+                      <th>Email</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-record>
+                    <tr>
+                      <td>{{ record.propriedade.nome }}</td>
+                      <td>{{ record.propriedade.cultura }}</td>
+                      <td>{{ record.propriedade.hectares | number: '1.0-0' }}</td>
+                      <td>{{ record.lead.nome }}</td>
+                      <td>{{ record.lead.telefone || '—' }}</td>
+                      <td>{{ record.lead.email || '—' }}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </li>
+            }
           }
         </ul>
       </div>

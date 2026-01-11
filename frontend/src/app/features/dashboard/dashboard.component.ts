@@ -37,6 +37,9 @@ export class DashboardComponent implements OnInit {
 
   readonly leads = signal<Lead[]>([]);
 
+    // Município atualmente selecionado no painel de concentração territorial
+    readonly selectedMunicipio = signal<string | null>(null);
+
   readonly atribuicaoFilter = this.filterService.atribuicaoFilter;
   readonly priorityFilter = signal<PriorityFilter>('gt100');
 
@@ -70,6 +73,16 @@ export class DashboardComponent implements OnInit {
       }
     }
     return props;
+  });
+
+  // Propriedades exibidas no mapa: todas ou apenas as do município selecionado
+  readonly propriedadesMapa = computed<PropriedadeRural[]>(() => {
+    const selected = this.selectedMunicipio();
+    if (!selected) {
+      return this.filteredPropriedades();
+    }
+
+    return this.filteredPropriedades().filter((p) => `${p.cidade}/${p.uf}` === selected);
   });
 
   readonly leadsPorMunicipioOrdenado = computed(() => {
@@ -144,6 +157,29 @@ export class DashboardComponent implements OnInit {
     this.priorityRecords().filter((record) => record.propriedade.hectares >= 100).length,
   );
 
+  // Detalhes (lead + propriedades) para o município selecionado na concentração territorial
+  readonly detalhesMunicipioSelecionado = computed<PriorityRecord[]>(() => {
+    const selected = this.selectedMunicipio();
+    if (!selected) {
+      return [];
+    }
+
+    const [cidade, uf] = selected.split('/');
+    const result: PriorityRecord[] = [];
+
+    for (const lead of this.filteredLeads()) {
+      if (lead.propriedadesRurais?.length) {
+        for (const propriedade of lead.propriedadesRurais) {
+          if (propriedade.cidade === cidade && propriedade.uf === uf) {
+            result.push({ lead, propriedade });
+          }
+        }
+      }
+    }
+
+    return result;
+  });
+
   ngOnInit(): void {
     // Carrega dados inicialmente com o filtro padrão (não atribuído)
     this.loadLeadsData();
@@ -169,6 +205,7 @@ export class DashboardComponent implements OnInit {
     // Reset paginação
     this.municipioPaginaPage.set(0);
     this.priorityPage.set(0);
+    this.selectedMunicipio.set(null);
 
     // Carrega dados com o filtro apropriado
     this.loadLeadsData();
@@ -206,6 +243,14 @@ export class DashboardComponent implements OnInit {
     // Carrega mais quando scrollar até 80% do final
     if (scrollPercentage > 0.8) {
       this.loadMorePriorities();
+    }
+  }
+
+  protected toggleMunicipioDetails(municipio: string): void {
+    if (this.selectedMunicipio() === municipio) {
+      this.selectedMunicipio.set(null);
+    } else {
+      this.selectedMunicipio.set(municipio);
     }
   }
 
