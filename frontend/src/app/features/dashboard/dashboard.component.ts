@@ -18,6 +18,11 @@ type PriorityRecord = {
   propriedade: PropriedadeRural;
 };
 
+type MunicipioRecord = {
+  municipio: string;
+  count: number;
+};
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -32,6 +37,12 @@ export class DashboardComponent implements OnInit {
   readonly propriedades = signal<PropriedadeRural[]>([]);
 
   readonly atribuicaoFilter = signal<AtribuicaoFilter>('ambos');
+  readonly priorityFilter = signal<PriorityFilter>('gt100');
+
+  // Paginação
+  readonly municipioPaginaPage = signal(0);
+  readonly priorityPage = signal(0);
+  readonly itemsPerPage = 10;
 
   readonly filteredLeads = computed<Lead[]>(() => {
     const mode = this.atribuicaoFilter();
@@ -57,14 +68,27 @@ export class DashboardComponent implements OnInit {
     return counts;
   });
 
-  readonly leadsPorMunicipio = computed(() => {
+  readonly leadsPorMunicipioOrdenado = computed(() => {
     const counts: Record<string, number> = {};
     for (const prop of this.filteredPropriedades()) {
       const key = `${prop.cidade}/${prop.uf}`;
       counts[key] = (counts[key] || 0) + 1;
     }
-    return counts;
+    // Ordenar por quantidade (decrescente) e depois por nome
+    return Object.entries(counts)
+      .map(([municipio, count]) => ({ municipio, count }))
+      .sort((a, b) => b.count - a.count || a.municipio.localeCompare(b.municipio));
   });
+
+  readonly municipiosPaginados = computed<MunicipioRecord[]>(() => {
+    const page = this.municipioPaginaPage();
+    const start = page * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.leadsPorMunicipioOrdenado().slice(start, end);
+  });
+
+  readonly totalMunicipios = computed(() => this.leadsPorMunicipioOrdenado().length);
+  readonly totalMunicipioPages = computed(() => Math.ceil(this.totalMunicipios() / this.itemsPerPage));
 
   readonly priorityOptions: { label: string; value: PriorityFilter }[] = [
     { label: 'Menor que 100 ha', value: 'lt100' },
@@ -77,8 +101,6 @@ export class DashboardComponent implements OnInit {
     { label: 'Atribuído', value: 'atribuido' },
     { label: 'Não atribuído', value: 'nao_atribuido' },
   ];
-
-  readonly priorityFilter = signal<PriorityFilter>('gt100');
 
   private readonly priorityPredicates: Record<PriorityFilter, (hectares: number) => boolean> = {
     lt100: (hectares) => hectares < 100,
@@ -107,6 +129,16 @@ export class DashboardComponent implements OnInit {
       .sort((a, b) => b.propriedade.hectares - a.propriedade.hectares);
   });
 
+  readonly prioritiesPaginadas = computed<PriorityRecord[]>(() => {
+    const page = this.priorityPage();
+    const start = page * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    return this.filteredPriorities().slice(start, end);
+  });
+
+  readonly totalPriorities = computed(() => this.filteredPriorities().length);
+  readonly totalPriorityPages = computed(() => Math.ceil(this.totalPriorities() / this.itemsPerPage));
+
   readonly leadsPrioritariosCount = computed(() =>
     this.priorityRecords().filter((record) => record.propriedade.hectares >= 100).length,
   );
@@ -120,9 +152,10 @@ export class DashboardComponent implements OnInit {
   protected changeAtribuicaoFilter(value: string): void {
     const mode = value as AtribuicaoFilter;
     this.atribuicaoFilter.set(mode);
+    // Reset paginação
+    this.municipioPaginaPage.set(0);
+    this.priorityPage.set(0);
 
-    // Para "atribuido" usamos o distribuidor do usuário; para os demais,
-    // deixamos o backend aplicar suas próprias regras sem forçar distribuidorId.
     if (mode === 'atribuido') {
       const userJson = localStorage.getItem('marketshare_user');
       if (!userJson) return;
@@ -139,7 +172,6 @@ export class DashboardComponent implements OnInit {
         // se der erro no parse, apenas mantém o filtro local
       }
     } else {
-      // "nao_atribuido" e "ambos" voltam a usar o conjunto padrão do backend
       this.api.getLeads().subscribe((data) => this.leads.set(data));
       this.api.getPropriedades().subscribe((data) => this.propriedades.set(data));
     }
@@ -147,5 +179,38 @@ export class DashboardComponent implements OnInit {
 
   protected changePriorityFilter(value: string): void {
     this.priorityFilter.set(value as PriorityFilter);
+    this.priorityPage.set(0); // Reset paginação ao mudar filtro
   }
+
+  protected loadMoreMunicipios(): void {
+    if (this.municipioPaginaPage() < this.totalMunicipioPages() - 1) {
+      this.municipioPaginaPage.set(this.municipioPaginaPage() + 1);
+    }
+  }
+
+  protected loadMorePriorities(): void {
+    if (this.priorityPage() < this.totalPriorityPages() - 1) {
+      this.priorityPage.set(this.priorityPage() + 1);
+    }
+  }
+
+  protected onMunicipiosScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+    const scrollPercentage = (element.scrollTop + element.clientHeight) / element.scrollHeight;
+    // Carrega mais quando scrollar até 80% do final
+    if (scrollPercentage > 0.8) {
+      this.loadMoreMunicipios();
+    }
+  }
+
+  protected onPriorityScroll(event: Event): void {
+    const element = event.target as HTMLElement;
+    const scrollPercentage = (element.scrollTop + element.clientHeight) / element.scrollHeight;
+    // Carrega mais quando scrollar até 80% do final
+    if (scrollPercentage > 0.8) {
+      this.loadMorePriorities();
+    }
+  }
+
+  protected readonly Math = Math;
 }

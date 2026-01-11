@@ -254,6 +254,32 @@
   overflow: auto;
 }
 
+.panel__table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  margin-bottom: 1rem;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(147, 193, 31, 0.4);
+    border-radius: 999px;
+    
+    &:hover {
+      background: rgba(147, 193, 31, 0.6);
+    }
+  }
+}
+
 .panel__table ::ng-deep .p-datatable-table {
   width: 100%;
   font-size: 0.9rem;
@@ -280,7 +306,76 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Pagination controls */
+.panel__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pagination-info {
+  font-size: 0.8rem;
+  color: var(--neutral-300);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pagination-btn {
+  padding: 0.6rem 1.5rem;
+  border: 1px solid rgba(147, 193, 31, 0.5);
+  border-radius: 999px;
+  background: rgba(147, 193, 31, 0.1);
+  color: var(--agro-lime);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &:hover:not(:disabled) {
+    background: rgba(147, 193, 31, 0.2);
+    border-color: var(--agro-lime);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
 /* Municipios list */
+.municipios-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  margin-bottom: 1rem;
+  padding-right: 0.5rem;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(147, 193, 31, 0.4);
+    border-radius: 999px;
+    
+    &:hover {
+      background: rgba(147, 193, 31, 0.6);
+    }
+  }
+}
+
 .municipios-list {
   list-style: none;
   margin: 0;
@@ -288,20 +383,47 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  flex: 1;
-  overflow-y: auto;
 }
 
-.municipios-list li {
+.municipios-list__item {
   padding: 1rem;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
 }
 
-.municipios-list li:hover {
-  background: rgba(255, 255, 255, 0.06);
+.municipios-list__badge {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--agro-fern), var(--agro-lime));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: var(--neutral-950);
+}
+
+.municipios-list__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.municipios-list__name {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #f4fff6;
+  font-weight: 600;
+  word-break: break-word;
 }
 
 .municipio-item {
