@@ -1,5 +1,5 @@
 <div class="map-container" *ngIf="markers.length; else noData">
-  <google-map [height]="'400px'" [width]="'100%'" [center]="center" [zoom]="zoom">
+  <google-map [height]="'100%'" [width]="'100%'" [center]="center" [zoom]="zoom">
     <map-marker
       *ngFor="let marker of markers"
       [position]="marker.position"

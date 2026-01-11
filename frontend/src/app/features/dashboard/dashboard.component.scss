@@ -111,16 +111,16 @@
   min-height: 500px;
 }
 
-/* Map: Full width below */
+/* Map: taller card */
 .panel--map {
   grid-column: span 8;
-  min-height: 420px;
+  min-height: 520px;
 }
 
-/* Secondary: Right side, matches summary height */
+/* Secondary: same height as map */
 .panel--secondary {
   grid-column: span 4;
-  min-height: 420px;
+  min-height: 520px;
   overflow-y: auto;
 }
 
