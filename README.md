@@ -2,6 +2,83 @@
 
 Uma plataforma completa de gerenciamento agrícola com dashboard inteligente, gestão de leads, propriedades rurais e distribuição de mapas geográficos.
 
+## ⚡ Guia Rápido (Primeiro Acesso)
+
+1. **Clonar o repositório e instalar dependências**
+  ```bash
+  git clone https://github.com/alyssonlcss/marketShare.git
+  cd marketShare
+
+  cd backend && npm install
+  cd ../frontend && npm install
+  ```
+
+2. **Configurar o banco PostgreSQL e o .env do backend**
+  - Criar o banco `marketshare_db` e o usuário `marketshare_user` (ver seção "Configuração do Banco de Dados PostgreSQL").
+  - Criar o arquivo `backend/.env` conforme o exemplo daquela seção.
+
+3. **Carregar dados de teste**
+  ```bash
+  cd marketShare   # pasta raiz, se ainda não estiver nela
+  psql -U marketshare_user -d marketshare_db -f dados-para-testes-insert/test-data.sql
+  ```
+
+4. **Subir o backend (NestJS)**
+  ```bash
+  cd backend
+  npm run start:dev
+  ```
+
+5. **Subir o frontend (Angular)**
+  ```bash
+  cd frontend
+  npm start
+  ```
+
+6. **Logar no sistema**
+  - Acesse `http://localhost:4200`.
+  - Use o usuário de teste (ver seção "Usuário de Teste (Login)").
+
+---
+
+## 🌟 Funcionalidades Principais
+
+- **Dashboard operacional**
+  - Visão geral de leads ativos, status e distribuição por área produtiva.
+  - Painel "Cartografia agro" com mapa geográfico das propriedades (Google Maps).
+  - Painel "Concentração territorial" com leads por município e detalhes de propriedades/leads.
+- **Gestão de Leads**
+  - Listagem, filtros por nome e status, criação de novos leads via modal.
+  - Associação entre lead e propriedade rural.
+- **Gestão de Propriedades Rurais**
+  - Listagem com cultura, hectares, município e link com o lead responsável.
+  - Drawer lateral com detalhes do lead associado à propriedade.
+- **Gestão de Produtos e Aderência**
+  - Lista de produtos com filtros.
+  - Tabela de "Propriedades com match de cultura" mostrando aderência entre cultura da propriedade e categoria do produto.
+  - Drawer de lead associado à propriedade selecionada.
+- **Autenticação e Atribuição por Distribuidor**
+  - Login com JWT, proteção de rotas e interceptação de chamadas HTTP.
+  - Filtros por atribuição (atribuído / não atribuído ao distribuidor atual) refletidos no dashboard, leads, propriedades e produtos.
+
+## 🧱 Tecnologias Utilizadas
+
+- **Backend**
+  - NestJS 11 (TypeScript), arquitetura modular por domínio (auth, lead, propriedade-rural, produto, distribuidor).
+  - TypeORM com PostgreSQL.
+  - Validação com class-validator e autenticação com Passport (local + JWT).
+- **Frontend**
+  - Angular 21 (standalone components).
+  - PrimeNG (tabelas, selects, layout) + PrimeFlex + PrimeIcons.
+  - Google Maps via @angular/google-maps.
+  - Estilização com SCSS e design focado em painel operacional agro.
+- **Qualidade e Testes**
+  - Backend: Jest para testes unitários e e2e de API.
+  - Frontend: Karma/jasmine para unit tests e Playwright para testes e2e de interface.
+- **Ferramentas de apoio**
+  - Node.js + npm para scripts de build/test.
+  - VS Code com extensões recomendadas para NestJS, Angular e banco de dados.
+
 ## 📋 Requisitos do Sistema
 
 ### Pré-requisitos Globais
@@ -80,6 +157,43 @@ NODE_ENV=development
 
 ---
 
+## 👤 Usuário de Teste (Login)
+
+O script de dados de teste em [dados-para-testes-insert/test-data.sql](dados-para-testes-insert/test-data.sql) cria um usuário padrão para acessar o sistema em ambiente de desenvolvimento.
+
+Após executar o script SQL no banco (veja a seção "Dados de Teste (SQL)"), utilize as credenciais abaixo na tela de login do frontend:
+
+- **E-mail**: `alyssonlcss@gmail.com`
+- **Senha**: `minhaSenha123`
+
+Essas credenciais são apenas para uso local/de desenvolvimento e **não devem ser usadas em produção**.
+
+---
+
+## 📊 Dados de Teste (SQL)
+
+Para acelerar os testes locais, o repositório inclui um script SQL com dados de exemplo em [dados-para-testes-insert/test-data.sql](dados-para-testes-insert/test-data.sql).
+
+Esse script cria:
+
+- Distribuidores e usuários de exemplo com credenciais de acesso.
+- Leads (atribuídos e não atribuídos) com CPFs, telefones e e-mails válidos.
+- Propriedades rurais em municípios de MG, com culturas e hectares.
+- Produtos com categorias usadas para cálculo de "match de cultura".
+
+### Como carregar os dados de teste
+
+No diretório raiz do projeto:
+
+```bash
+psql -U marketshare_user -d marketshare_db -f dados-para-testes-insert/test-data.sql
+```
+
+- Ajuste o usuário (`-U`) e o banco (`-d`) se tiver usado outros nomes na criação do banco.
+- Após rodar o script, você terá um usuário de teste para login (veja o próprio arquivo SQL para e-mail/senha) e dados suficientes para explorar todas as telas do sistema.
+
+---
+
 ## 🛠️ Extensões Recomendadas do VS Code
 
 ### Backend (NestJS)
@@ -103,6 +217,11 @@ NODE_ENV=development
 - **Git Graph** (mhutchie.git-graph)
 - **Todo Tree** (Gruntfuggly.todo-tree)
 - **Thunder Client** (rangav.vscode-thunder-client)
+
+### Banco de Dados
+- **pgAdmin** ou **DBeaver** (aplicativos desktop) para administrar o PostgreSQL, inspecionar tabelas e rodar SQL manualmente.
+- **SQLTools** (mtxr.sqltools) ou **Database Client** (cweijan.vscode-database-client2) para gerenciar o banco diretamente pelo VS Code.
+- Recomenda-se configurar uma conexão para o banco `marketshare_db` para visualizar facilmente as tabelas geradas pelo TypeORM e os dados inseridos pelo script de testes.
 
 **Instalar tudo de uma vez:**
 ```bash
@@ -273,8 +392,117 @@ npm start                # Modo desenvolvimento (port 4200)
 npm run build            # Build para produção
 npm run watch            # Watch mode
 npm test                 # Testes unitários
+npm run e2e              # Testes end-to-end (Playwright)
 npm run serve:ssr:marketshare-frontend  # SSR
 ```
+
+---
+
+## 🧪 Testes Automatizados
+
+O projeto possui testes automatizados tanto no backend quanto no frontend.
+
+### Backend (NestJS)
+
+No diretório `backend`:
+
+```bash
+cd backend
+
+# Testes unitários (services, controllers, etc.)
+npm test
+
+# Testes e2e da API (rotas reais subindo um app Nest em memória)
+npm run test:e2e
+```
+
+Os arquivos de teste ficam em `src/**/*.spec.ts` (unitários) e em `test/**/*.e2e-spec.ts` (e2e, conforme configuração do Jest).
+
+### Frontend (Angular)
+
+No diretório `frontend`:
+
+```bash
+cd frontend
+
+# Testes unitários (componentes, serviços)
+npm test
+
+# Primeiro uso do Playwright: instalar browsers
+npx playwright install
+
+# Testes end-to-end (login, dashboard, leads, propriedades, produtos)
+npm run e2e
+```
+
+- Os testes unitários ficam em `src/app/**/*.spec.ts`.
+- Os testes e2e estão em [frontend/e2e](frontend/e2e), cobrindo:
+  - Autenticação e acesso ao dashboard.
+  - Fluxos de lista e filtro de leads.
+  - Listagem e detalhes de propriedades e drawer de "Lead associado".
+  - Tela de produtos com aderência por cultura e drawer de lead.
+
+> Dica: execute primeiro o script de dados de teste para garantir que as telas tenham conteúdo suficiente e que os cenários e2e encontrem os registros esperados.
+
+---
+
+## 🔗 Principais Endpoints da API
+
+URL base em desenvolvimento: `http://localhost:3000`
+
+### Autenticação
+
+- `POST /auth/login`
+  - Corpo: `{ "email": string, "password": string }`.
+  - Retorna um `access_token` (JWT) e os dados básicos do usuário.
+  - Deve ser usado pelo frontend para autenticar e armazenar o token.
+
+### Leads
+
+- `GET /lead`
+  - Lista leads visíveis para o distribuidor do usuário autenticado.
+  - Aceita filtros via query string (por exemplo, status, atribuição, etc.).
+- `GET /lead/:id`
+  - Detalhes de um lead específico.
+- `POST /lead`
+  - Cria um novo lead (usa `CreateLeadDto` para validação de campos obrigatórios).
+- `PATCH /lead/:id`
+  - Atualiza parcialmente um lead existente.
+- `DELETE /lead/:id`
+  - Remove um lead (retorna `204 No Content` em caso de sucesso).
+
+### Propriedades Rurais
+
+- `GET /propriedade-rural`
+  - Lista propriedades rurais vinculadas ao distribuidor/usuário autenticado, com filtros opcionais.
+- `GET /propriedade-rural/:id`
+  - Detalhes de uma propriedade específica (incluindo relação com lead/distribuidor).
+- `POST /propriedade-rural`
+  - Cria uma nova propriedade rural.
+- `PATCH /propriedade-rural/:id`
+  - Atualiza dados da propriedade.
+- `DELETE /propriedade-rural/:id`
+  - Remove uma propriedade (retorna `204 No Content`).
+
+### Produtos
+
+- `GET /produto`
+  - Lista produtos do distribuidor atual, com suporte a filtros (por categoria, etc.).
+- `GET /produto/:id`
+  - Detalhes de um produto.
+- `POST /produto`
+  - Cria novo produto vinculado ao distribuidor do usuário autenticado.
+- `PATCH /produto/:id`
+  - Atualiza dados do produto.
+- `DELETE /produto/:id`
+  - Remove um produto (retorna `204 No Content`).
+
+### Distribuidores
+
+- `GET /distribuidor`
+  - Lista distribuidores cadastrados (útil para administração ou telas de configuração).
+
+> Todos os endpoints (exceto `/auth/login`) exigem cabeçalho `Authorization: Bearer <token>` com o JWT obtido no login.
 
 ---
 
