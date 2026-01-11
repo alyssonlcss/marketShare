@@ -1,0 +1,13 @@
+.map-container {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.map-empty {
+  text-align: center;
+  color: var(--neutral-300);
+  font-size: 0.95rem;
+  padding: 2rem;
+}

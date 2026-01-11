@@ -1,0 +1,136 @@
+<section class="dashboard">
+  <header class="dashboard__intro">
+    <div>
+      <span class="eyebrow">Pulso operacional</span>
+      <h1>Visão integrada do território e share agro.</h1>
+      <p>
+        Acompanhe em um só lugar os principais indicadores de leads, propriedades e distribuição por município.
+        Use esta visão para direcionar visitas, rotas e estoques.
+      </p>
+    </div>
+    <div class="dashboard__filters-section">
+      <div class="dashboard__chips">
+        <span class="tag-pill">{{ totalLeads() }} leads ativos</span>
+        <span class="tag-pill">{{ filteredPropriedades().length }} propriedades</span>
+      </div>
+      <div class="dashboard__filter-box">
+        <label>
+          <p-select
+            [options]="atribuicaoOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Filtrar atribuição"
+            [showClear]="true"
+            [ngModel]="atribuicaoFilter()"
+            (onChange)="changeAtribuicaoFilter($event.value)"
+          ></p-select>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <div class="dashboard__grid">
+    <!-- Card de Resumo: Total de Leads -->
+    <article class="panel panel--summary glass-panel">
+      <div class="panel__header">
+        <div>
+          <span class="eyebrow">Visão rápida</span>
+          <h3>Resumo de leads</h3>
+        </div>
+      </div>
+      <div class="summary-content">
+        <div class="summary-stat">
+          <p class="summary-label">Total de Leads</p>
+          <strong class="summary-number">{{ totalLeads() }}</strong>
+        </div>
+        <div class="summary-status">
+          <ul class="status-list">
+            <li *ngFor="let entry of (leadsPorStatus() | keyvalue)" class="status-item">
+              <span class="status-label">{{ entry.key }}</span>
+              <span class="status-count">{{ entry.value }}</span>
+              <div class="status-bar">
+                <span [style.width.%]="totalLeads() ? (entry.value / totalLeads()) * 100 : 0"></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- Painel: Leads por Área Produtiva -->
+    <article class="panel panel--main glass-panel">
+      <div class="panel__header">
+        <div>
+          <span class="eyebrow">Rotas prioritárias</span>
+          <h3>Leads por área produtiva</h3>
+        </div>
+        <div class="panel__filters">
+          <label>
+            <span>Área mínima</span>
+            <p-select
+              [options]="priorityOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Filtrar área"
+              [showClear]="true"
+              [ngModel]="priorityFilter()"
+              (onChange)="changePriorityFilter($event.value)"
+            ></p-select>
+          </label>
+        </div>
+      </div>
+      <p-table class="panel__table" [value]="filteredPriorities()" [paginator]="false" [rows]="8">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Nome</th>
+            <th>Cultura</th>
+            <th>Área (ha)</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-record>
+          <tr>
+            <td>{{ record.lead.nome }}</td>
+            <td>{{ record.propriedade.cultura }}</td>
+            <td>{{ record.propriedade.hectares | number: '1.0-0' }}</td>
+            <td>{{ record.lead.telefone || '—' }}</td>
+            <td>{{ record.lead.email || '—' }}</td>
+            <td>{{ record.lead.status }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </article>
+
+    <!-- Painel: Mapa de Propriedades -->
+    <article class="panel panel--map glass-panel">
+      <div class="panel__header">
+        <div>
+          <span class="eyebrow">Cartografia agro</span>
+          <h3>Distribuição geográfica</h3>
+        </div>
+        <span class="panel__meta">Atualizado automaticamente</span>
+      </div>
+      <app-mapa-propriedades [propriedades]="filteredPropriedades()"></app-mapa-propriedades>
+    </article>
+
+    <!-- Painel: Concentração Territorial -->
+    <article class="panel panel--secondary glass-panel">
+      <div class="panel__header">
+        <div>
+          <span class="eyebrow">Concentração territorial</span>
+          <h3>Leads por município</h3>
+        </div>
+      </div>
+      <ul class="municipios-list">
+        <li *ngFor="let entry of (leadsPorMunicipio() | keyvalue)">
+          <div class="municipio-item">
+            <strong>{{ entry.key }}</strong>
+            <span>{{ entry.value }} propriedades</span>
+          </div>
+        </li>
+      </ul>
+    </article>
+  </div>
+</section>

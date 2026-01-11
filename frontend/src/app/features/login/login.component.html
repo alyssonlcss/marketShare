@@ -1,0 +1,76 @@
+<section class="login-shell">
+  <div class="login-hero glass-panel">
+    <span class="eyebrow">Inteligência territorial</span>
+    <h1>Planeje o share da sua distribuição com precisão cirúrgica.</h1>
+    <p>
+      Painel unificado com leads, propriedades rurais, mapas e performance para decisões rápidas em campo.
+      Dados conectados ao ecossistema agro para indicar as melhores prioridades.
+    </p>
+    <ul class="login-hero__highlights">
+      <li>
+        <span>01</span>
+        <div>
+          <strong>Mapas dinâmicos</strong>
+          <p>Visualize culturas, clima e áreas prioritárias em tempo real.</p>
+        </div>
+      </li>
+      <li>
+        <span>02</span>
+        <div>
+          <strong>Alertas inteligentes</strong>
+          <p>Receba sinais sobre variações de share e leads com área &gt; 100 ha.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="login-panel glass-panel">
+    <header class="login-panel__header">
+      <div>
+        <span class="eyebrow">Acesso restrito</span>
+        <h2>Entrar no MarketShare</h2>
+      </div>
+      <p>Use o mesmo usuário enviado pelo time Agro Intelligence.</p>
+    </header>
+
+    <form class="login-form" (ngSubmit)="submit()" autocomplete="off">
+      <div class="login-field">
+        <label for="username">Usuário</label>
+        <input
+          id="username"
+          type="text"
+          name="username"
+          [(ngModel)]="form.username"
+          placeholder="ex: consultor@campo.com"
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="login-field">
+        <label for="password">Senha</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          [(ngModel)]="form.password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div *ngIf="error" class="login-alert">{{ error }}</div>
+
+      <div class="login-actions">
+        <button type="submit" class="module-primary-btn" [disabled]="loading">
+          {{ loading ? 'Entrando...' : 'Acessar painel' }}
+        </button>
+        <small>Ao continuar você concorda com o uso dos dados conforme política interna.</small>
+      </div>
+    </form>
+
+    <footer class="login-panel__footer">
+      <span>Dificuldades no acesso?</span>
+      <a href="mailto:suporte@marketshareagro.com">Fale com o suporte agro</a>
+    </footer>
+  </div>
+</section>

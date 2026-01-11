@@ -1,0 +1,90 @@
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { SelectModule } from 'primeng/select';
+import { ApiService } from '../../core/services/api.service';
+import { PropriedadeRural } from '../../core/models/propriedade-rural.model';
+
+@Component({
+  selector: 'app-propriedades',
+  standalone: true,
+  imports: [CommonModule, FormsModule, TableModule, DialogModule, InputTextModule, SelectModule],
+  templateUrl: './propriedades.component.html',
+  styleUrl: './propriedades.component.scss',
+})
+export class PropriedadesComponent implements OnInit {
+  private readonly api = inject(ApiService);
+
+  readonly propriedades = signal<PropriedadeRural[]>([]);
+
+  dialogVisible = false;
+  editing: PropriedadeRural | null = null;
+
+  formModel: Partial<PropriedadeRural> = {
+    cultura: '',
+    hectares: 0,
+    uf: '',
+    cidade: '',
+    latitude: 0,
+    longitude: 0,
+  };
+
+  get ufOptions(): string[] {
+    const set = new Set(this.propriedades().map((p) => p.uf).filter((v): v is string => !!v));
+    return Array.from(set).sort();
+  }
+
+  get cidadeOptions(): string[] {
+    const set = new Set(this.propriedades().map((p) => p.cidade).filter((v): v is string => !!v));
+    return Array.from(set).sort();
+  }
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    this.api.getPropriedades().subscribe((data) => this.propriedades.set(data));
+  }
+
+  openNew(): void {
+    this.editing = null;
+    this.formModel = {
+      cultura: '',
+      hectares: 0,
+      uf: '',
+      cidade: '',
+      latitude: 0,
+      longitude: 0,
+    };
+    this.dialogVisible = true;
+  }
+
+  edit(prop: PropriedadeRural): void {
+    this.editing = prop;
+    this.formModel = { ...prop };
+    this.dialogVisible = true;
+  }
+
+  save(): void {
+    if (this.editing) {
+      this.api.updatePropriedade(this.editing.id, this.formModel).subscribe(() => {
+        this.dialogVisible = false;
+        this.load();
+      });
+    } else {
+      this.api.createPropriedade(this.formModel).subscribe(() => {
+        this.dialogVisible = false;
+        this.load();
+      });
+    }
+  }
+
+  delete(prop: PropriedadeRural): void {
+    if (!confirm(`Deseja remover a propriedade "${prop.cultura}"?`)) return;
+    this.api.deletePropriedade(prop.id).subscribe(() => this.load());
+  }
+}

@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&display=swap');
+
+:root {
+	--agro-canopy: #0f3d2e;
+	--agro-fern: #1f7a42;
+	--agro-leaf: #55b259;
+	--agro-lime: #93c11f;
+	--agro-soil: #7a5a3a;
+	--agro-sky: #cde7ff;
+	--agro-dawn: #f3f8f2;
+	--neutral-900: #050c12;
+	--neutral-700: #2a3a3c;
+	--neutral-500: #5c6b6c;
+	--neutral-300: #94a3a5;
+	--neutral-100: #e2ece7;
+	--neutral-50: #f6f9f7;
+	--surface: rgba(9, 23, 18, 0.85);
+	--surface-muted: rgba(255, 255, 255, 0.04);
+	--border-soft: rgba(255, 255, 255, 0.08);
+	--glass-blur: 18px;
+	--shadow-soft: 0 20px 45px rgba(5, 12, 18, 0.35);
+	--font-display: 'Space Grotesk', 'Source Sans 3', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-body: 'Source Sans 3', 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	font-family: var(--font-body);
+	line-height: 1.6;
+	background-color: var(--neutral-900);
+	color: #ecf4f0;
+	background-image:
+		radial-gradient(circle at 15% 15%, rgba(147, 193, 31, 0.18), transparent 45%),
+		radial-gradient(circle at 85% 20%, rgba(85, 178, 89, 0.2), transparent 50%),
+		radial-gradient(circle at 50% 80%, rgba(205, 231, 255, 0.12), transparent 45%),
+		linear-gradient(135deg, #030908 0%, #091f18 55%, #04200f 100%);
+	background-attachment: fixed;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+a {
+	color: inherit;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+}
+
+.eyebrow {
+	font-size: 0.78rem;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	color: var(--agro-lime);
+	font-weight: 600;
+}
+
+.glass-panel {
+	background: var(--surface);
+	border: 1px solid var(--border-soft);
+	border-radius: 20px;
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	box-shadow: var(--shadow-soft);
+}
+
+.tag-pill {
+	padding: 0.15rem 0.75rem;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	background: rgba(147, 193, 31, 0.15);
+	color: var(--agro-lime);
+	border: 1px solid rgba(147, 193, 31, 0.25);
+}
+
+.module-shell {
+	background: rgba(8, 19, 14, 0.75);
+	border-radius: 26px;
+	padding: 2rem;
+	border: 1px solid var(--border-soft);
+	box-shadow: var(--shadow-soft);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+}
+
+.module-shell__header {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.module-shell h1 {
+	margin: 0;
+	font-family: var(--font-display);
+	font-size: clamp(1.5rem, 2.2vw, 2rem);
+}
+
+.module-primary-btn {
+	border: none;
+	border-radius: 999px;
+	padding: 0.65rem 1.8rem;
+	font-weight: 600;
+	background: linear-gradient(120deg, var(--agro-fern), var(--agro-leaf));
+	color: #f5fff6;
+	box-shadow: 0 10px 25px rgba(31, 122, 66, 0.35);
+	cursor: pointer;
+	transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.module-primary-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 15px 30px rgba(31, 122, 66, 0.45);
+}
+
+.module-primary-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+.table-subtle {
+	width: 100%;
+	border-collapse: collapse;
+	color: #e3f2ea;
+}
+
+.table-subtle th,
+.table-subtle td {
+	padding: 0.9rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.table-subtle thead th {
+	text-transform: uppercase;
+	font-size: 0.78rem;
+	letter-spacing: 0.1em;
+	color: var(--neutral-300);
+}
+
+.table-subtle tbody tr:hover {
+	background: rgba(255, 255, 255, 0.03);
+}
+
+.pill-danger {
+	background: rgba(255, 116, 97, 0.15);
+	color: #ff7461;
+	border: 1px solid rgba(255, 116, 97, 0.3);
+}
+
+.pill-info {
+	background: rgba(79, 185, 255, 0.15);
+	color: #9ed2ff;
+	border: 1px solid rgba(79, 185, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+	.module-shell {
+		padding: 1.25rem;
+		border-radius: 18px;
+	}
+
+	.module-shell__header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	body {
+		line-height: 1.5;
+	}
+}

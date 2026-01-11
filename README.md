@@ -1,98 +1,369 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# MarketShare - Plataforma Agro
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Uma plataforma completa de gerenciamento agrícola com dashboard inteligente, gestão de leads, propriedades rurais e distribuição de mapas geográficos.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Requisitos do Sistema
 
-## Description
+### Pré-requisitos Globais
+- **Node.js**: v20.0.0 ou superior
+- **npm**: v11.6.0 ou superior (incluído no Node.js)
+- **PostgreSQL**: v14 ou superior
+- **Git**: para versionamento
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
+### Verificar Instalação
 ```bash
-$ npm install
+node --version    # deve retornar v20.x.x ou superior
+npm --version     # deve retornar 11.x.x ou superior
+psql --version    # deve retornar PostgreSQL 14.x ou superior
 ```
 
-## Compile and run the project
+---
 
+## 🗄️ Configuração do Banco de Dados PostgreSQL
+
+### 1. Instalar PostgreSQL
+
+#### Windows
+- Baixe em: https://www.postgresql.org/download/windows/
+- Siga o instalador
+- **Importante**: Anote a senha do usuário `postgres`
+
+#### macOS (via Homebrew)
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+brew install postgresql
+brew services start postgresql
 ```
 
-## Run tests
-
+#### Linux (Ubuntu/Debian)
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Criar o Banco de Dados e Usuário
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Conectar como superusuário
+psql -U postgres
+
+# Dentro do psql, executar:
+CREATE USER marketshare_user WITH PASSWORD 'sua_senha_segura';
+CREATE DATABASE marketshare_db OWNER marketshare_user;
+
+# Conceder privilégios completos
+GRANT ALL PRIVILEGES ON DATABASE marketshare_db TO marketshare_user;
+
+# Sair
+\q
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Configurar Variáveis de Ambiente (Backend)
 
-## Resources
+Criar arquivo `backend/.env`:
+```env
+# Database
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USER=marketshare_user
+DATABASE_PASSWORD=sua_senha_segura
+DATABASE_NAME=marketshare_db
 
-Check out a few resources that may come in handy when working with NestJS:
+# JWT Secret
+JWT_SECRET=sua_chave_jwt_super_secreta_com_minimo_32_caracteres
+JWT_EXPIRATION=7d
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# API
+API_PORT=3000
+NODE_ENV=development
+```
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🛠️ Extensões Recomendadas do VS Code
 
-## Stay in touch
+### Backend (NestJS)
+- **ES7+ React/Redux/React-Native snippets** (dsznajder.es7-react-js-snippets)
+- **ESLint** (dbaeumer.vscode-eslint)
+- **Prettier - Code formatter** (esbenp.prettier-vscode)
+- **Nest Snippets** (fivepointseven.nest-snippets)
+- **Thunder Client** (rangav.vscode-thunder-client) - para testar APIs
+- **Postman** (Postman.postman-for-vscode)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Frontend (Angular)
+- **Angular Language Service** (Angular.ng-template)
+- **Angular Snippets** (johnpapa.Angular2)
+- **Prettier - Code formatter** (esbenp.prettier-vscode)
+- **ESLint** (dbaeumer.vscode-eslint)
+- **Thunder Client** (rangav.vscode-thunder-client)
+- **CSS Peek** (pranaygp.vscode-css-peek)
 
-## License
+### Geral
+- **GitLens** (eamodio.gitlens)
+- **Git Graph** (mhutchie.git-graph)
+- **Todo Tree** (Gruntfuggly.todo-tree)
+- **Thunder Client** (rangav.vscode-thunder-client)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Instalar tudo de uma vez:**
+```bash
+code --install-extension dsznajder.es7-react-js-snippets \
+  dbaeumer.vscode-eslint \
+  esbenp.prettier-vscode \
+  fivepointseven.nest-snippets \
+  rangav.vscode-thunder-client \
+  Postman.postman-for-vscode \
+  Angular.ng-template \
+  johnpapa.Angular2 \
+  pranaygp.vscode-css-peek \
+  eamodio.gitlens \
+  mhutchie.git-graph \
+  Gruntfuggly.todo-tree
+```
+
+---
+
+## 🚀 Como Rodar o Projeto
+
+### Passo 1: Clonar o Repositório
+```bash
+git clone https://github.com/alyssonlcss/marketShare.git
+cd marketShare
+```
+
+### Passo 2: Instalar Dependências
+
+#### Backend
+```bash
+cd backend
+npm install
+```
+
+#### Frontend
+```bash
+cd ../frontend
+npm install
+```
+
+### Passo 3: Configurar Variáveis de Ambiente
+
+#### Backend
+Criar `backend/.env` com as variáveis do PostgreSQL (veja seção acima).
+
+#### Frontend (Opcional)
+Criar `frontend/.env` se necessário (geralmente não é obrigatório para desenvolvimento local).
+
+### Passo 4: Executar o Projeto
+
+#### Opção A: Terminais Separados (Recomendado)
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm run start:dev
+```
+Será acessível em: `http://localhost:3000`
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm start
+```
+Será acessível em: `http://localhost:4200`
+
+#### Opção B: Um Único Terminal
+```bash
+# Terminal principal
+npm run start:dev:all  # Se configurado em scripts de raiz
+```
+
+---
+
+## 📦 Dependências Principais
+
+### Backend (NestJS)
+```json
+{
+  "@nestjs/common": "^11.0.1",
+  "@nestjs/config": "^4.0.2",
+  "@nestjs/core": "^11.0.1",
+  "@nestjs/jwt": "^11.0.2",
+  "@nestjs/passport": "^11.0.5",
+  "@nestjs/typeorm": "^11.0.0",
+  "bcryptjs": "^3.0.3",
+  "class-validator": "^0.14.3",
+  "passport-jwt": "^4.0.1",
+  "passport-local": "^1.0.0",
+  "pg": "^8.16.3",
+  "typeorm": "^0.3.28"
+}
+```
+
+### Frontend (Angular 21)
+```json
+{
+  "@angular/core": "^21.0.0",
+  "@angular/forms": "^21.0.0",
+  "@angular/google-maps": "^21.0.6",
+  "@angular/router": "^21.0.0",
+  "primeng": "^21.0.2",
+  "primeicons": "^7.0.0",
+  "rxjs": "~7.8.0"
+}
+```
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+marketShare/
+├── backend/                 # API NestJS
+│   ├── src/
+│   │   ├── auth/           # Autenticação JWT
+│   │   ├── lead/           # Módulo de Leads
+│   │   ├── propriedade-rural/  # Módulo de Propriedades
+│   │   ├── produto/        # Módulo de Produtos
+│   │   ├── distribuidor/   # Módulo de Distribuidores
+│   │   └── ...
+│   ├── .env                # Variáveis de ambiente
+│   └── package.json
+│
+├── frontend/               # App Angular
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── features/
+│   │   │   │   ├── dashboard/      # Dashboard principal
+│   │   │   │   ├── leads/          # Gerenciamento de leads
+│   │   │   │   ├── propriedades/   # Gerenciamento de propriedades
+│   │   │   │   ├── mapa-propriedades/  # Mapa Google Maps
+│   │   │   │   └── ...
+│   │   │   ├── core/
+│   │   │   │   ├── guards/
+│   │   │   │   ├── interceptors/
+│   │   │   │   ├── models/
+│   │   │   │   └── services/
+│   │   │   └── ...
+│   │   └── styles/         # Estilos globais
+│   ├── .env                # Variáveis de ambiente (opcional)
+│   └── package.json
+│
+├── .gitignore
+└── README.md
+```
+
+---
+
+## 🔧 Scripts Úteis
+
+### Backend
+```bash
+npm start                 # Rodar em produção
+npm run start:dev        # Modo desenvolvimento com watch
+npm run start:debug      # Modo debug
+npm run build            # Build para produção
+npm run test             # Executar testes
+npm run test:cov         # Testes com cobertura
+npm run lint             # ESLint
+npm run format           # Prettier
+```
+
+### Frontend
+```bash
+npm start                # Modo desenvolvimento (port 4200)
+npm run build            # Build para produção
+npm run watch            # Watch mode
+npm test                 # Testes unitários
+npm run serve:ssr:marketshare-frontend  # SSR
+```
+
+---
+
+## 🗺️ Google Maps API
+
+O projeto utiliza **Google Maps API** para exibir propriedades rurais geograficamente.
+
+### Configurar API Key
+
+1. Ir para [Google Cloud Console](https://console.cloud.google.com/)
+2. Criar novo projeto
+3. Ativar **Maps JavaScript API** e **Places API**
+4. Gerar uma chave API
+5. Adicionar no `frontend/index.html`:
+
+```html
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=SUA_API_KEY&libraries=maps,marker">
+</script>
+```
+
+---
+
+## 🔐 Autenticação
+
+O projeto usa **JWT (JSON Web Tokens)** para autenticação.
+
+### Login
+```bash
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario@example.com",
+  "password": "senha123"
+}
+```
+
+Resposta:
+```json
+{
+  "access_token": "eyJhbGc...",
+  "user": { "id": 1, "email": "usuario@example.com" }
+}
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Erro: "Port 3000 is already in use"
+```bash
+# Matar processo na porta 3000
+# Windows
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+
+# Linux/macOS
+lsof -ti:3000 | xargs kill -9
+```
+
+### Erro: "Cannot connect to database"
+- Verificar se PostgreSQL está rodando
+- Confirmar variáveis de ambiente em `backend/.env`
+- Testar conexão: `psql -U marketshare_user -d marketshare_db -h localhost`
+
+### Erro: "Cannot find module '@angular/google-maps'"
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+### Frontend não carrega dados
+- Verificar se backend está rodando em `http://localhost:3000`
+- Verificar CORS em `backend/src/main.ts`
+- Abrir DevTools (F12) e verificar aba Network
+
+---
+
+## 📞 Contato & Suporte
+
+Para dúvidas ou problemas:
+- Criar issue no repositório
+- Revisar logs do backend/frontend
+- Consultar documentação: [NestJS Docs](https://docs.nestjs.com), [Angular Docs](https://angular.io/docs)
+
+---
+
+## 📄 Licença
+
+UNLICENSED - Projeto privado

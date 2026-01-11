@@ -1,0 +1,36 @@
+<div class="layout">
+  <div class="layout__background" aria-hidden="true">
+    <div class="layout__sun"></div>
+    <div class="layout__field layout__field--primary"></div>
+    <div class="layout__field layout__field--secondary"></div>
+  </div>
+
+  <header class="layout__header glass-panel" *ngIf="!isLoginRoute()">
+    <div class="brand">
+      <span class="brand__icon" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="18" stroke="rgba(255,255,255,0.35)" stroke-width="2" />
+          <path d="M6 24c6-3 10-3 14 0s8 3 14 0" stroke="#93c11f" stroke-width="2.2" stroke-linecap="round" />
+          <path d="M6 30c6-3 10-3 14 0s8 3 14 0" stroke="#55b259" stroke-width="2.2" stroke-linecap="round" />
+          <path d="M10 15c3-4 7-6 10-6s7 2 10 6" stroke="#cde7ff" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </span>
+      <div class="brand__text">
+        <strong>MarketShare Agro</strong>
+        <small>Estratégia orientada ao campo</small>
+      </div>
+    </div>
+
+    <nav class="layout__nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/leads" routerLinkActive="active">Leads</a>
+      <a routerLink="/propriedades" routerLinkActive="active">Propriedades</a>
+    </nav>
+
+    <button class="layout__cta" type="button" (click)="logout()">Logoff</button>
+  </header>
+
+  <main class="layout__main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

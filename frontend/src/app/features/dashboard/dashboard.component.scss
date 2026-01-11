@@ -1,0 +1,370 @@
+:host {
+  display: block;
+}
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard__intro h1 {
+  margin: 0.4rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+}
+
+.dashboard__intro p {
+  color: var(--neutral-100);
+  max-width: 70ch;
+}
+
+.dashboard__filters-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.dashboard__chips {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dashboard__chips .tag-pill {
+  font-size: 0.85rem;
+  padding: 0.5rem 1.2rem;
+  font-weight: bold;
+  color: var(--agro-lime);
+  background: rgba(147, 193, 31, 0.1);
+  border: 1px solid rgba(147, 193, 31, 0.3);
+  border-radius: 999px;
+}
+
+.dashboard__filter-box {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard__filter-box label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dashboard ::ng-deep .p-select {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f4fff6;
+  min-height: 2.4rem;
+}
+
+.dashboard ::ng-deep .p-select-label {
+  color: #f4fff6;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.dashboard__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+  auto-rows: auto;
+}
+
+/* Panel sizing and proportions */
+.panel {
+  padding: 2rem;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Summary card: Small, left side */
+.panel--summary {
+  grid-column: span 4;
+  min-height: 320px;
+}
+
+/* Main table: Large, takes most of the width */
+.panel--main {
+  grid-column: span 8;
+  min-height: 500px;
+}
+
+/* Map: Full width below */
+.panel--map {
+  grid-column: span 8;
+  min-height: 420px;
+}
+
+/* Secondary: Right side, matches summary height */
+.panel--secondary {
+  grid-column: span 4;
+  min-height: 420px;
+  overflow-y: auto;
+}
+
+.panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.panel__header h3 {
+  margin: 0.2rem 0 0;
+  font-size: 1.4rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.panel__header .eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--neutral-300);
+  margin-bottom: 0.25rem;
+}
+
+.panel__meta {
+  align-self: flex-end;
+  color: var(--neutral-300);
+  font-size: 0.8rem;
+}
+
+.panel__filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.panel__filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--neutral-300);
+}
+
+.panel__filters select {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.35);
+  color: #f4fff6;
+  padding: 0.4rem 1.5rem 0.4rem 0.85rem;
+  font-size: 0.9rem;
+  appearance: none;
+  min-width: 180px;
+}
+
+/* Summary card styles */
+.summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.summary-stat {
+  text-align: center;
+}
+
+.summary-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--neutral-300);
+}
+
+.summary-number {
+  font-size: 3rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--agro-lime);
+  display: block;
+}
+
+.summary-status {
+  flex: 1;
+}
+
+.status-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  color: var(--neutral-300);
+  font-weight: 500;
+}
+
+.status-count {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #f4fff6;
+}
+
+.status-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.status-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--agro-fern), var(--agro-lime));
+  border-radius: 999px;
+}
+
+/* Panel table */
+.panel__table {
+  flex: 1;
+  overflow: auto;
+}
+
+.panel__table ::ng-deep .p-datatable-table {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.panel__table ::ng-deep th {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--neutral-300);
+  font-weight: 600;
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.panel__table ::ng-deep td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #f4fff6;
+}
+
+.panel__table ::ng-deep td:nth-child(3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Municipios list */
+.municipios-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.municipios-list li {
+  padding: 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s;
+}
+
+.municipios-list li:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.municipio-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.municipios-list strong {
+  font-size: 0.95rem;
+  color: #f4fff6;
+  font-weight: 600;
+}
+
+.municipios-list span {
+  color: var(--neutral-300);
+  font-size: 0.8rem;
+}
+
+/* Map container */
+.panel--map app-mapa-propriedades {
+  flex: 1;
+  display: block;
+  min-height: 350px;
+}
+
+@media (max-width: 1200px) {
+  .dashboard__grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  
+  .panel--summary {
+    grid-column: span 4;
+  }
+  
+  .panel--main {
+    grid-column: span 8;
+  }
+  
+  .panel--map {
+    grid-column: span 8;
+  }
+  
+  .panel--secondary {
+    grid-column: span 4;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard__grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .panel--summary,
+  .panel--main,
+  .panel--map,
+  .panel--secondary {
+    grid-column: span 1;
+    min-height: auto;
+  }
+  
+  .dashboard__filters-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

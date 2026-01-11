@@ -1,13 +1,14 @@
-# compiled output (root + subprojetos)
+# compiled output
 /dist
 /build
-/node_modules
-/backend/dist
-/backend/node_modules
-/frontend/dist
-/frontend/node_modules
+**/dist
+**/build
 
-# Logs
+# dependencies
+/node_modules
+**/node_modules
+
+# logs
 logs
 *.log
 npm-debug.log*
@@ -16,21 +17,32 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# OS
+# os
 .DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
 
-# Tests (raiz e subpastas)
-/coverage
-/.nyc_output
-/backend/coverage
-/backend/.nyc_output
-/frontend/coverage
-/frontend/.nyc_output
+# IDE - VSCode
+.vscode/*
+/frontend/.vscode/*
+/backend/.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
-# TypeScript incremental build info
-**/*.tsbuildinfo
+# AI Assistant Config (do NOT commit)
+.claude/
+.cursor/
+.gemini/
+.junie/
+.windsurf/
+.github/
 
-# IDEs and editors
+# IDE - Other
 /.idea
 .project
 .classpath
@@ -39,24 +51,30 @@ lerna-debug.log*
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+# Test coverage
+/coverage
+/.nyc_output
+**/coverage
+**/.nyc_output
 
-# dotenv environment variable files (raiz e subpastas)
+# TypeScript incremental build info
+**/*.tsbuildinfo
+
+# Environment variables (do NOT commit)
 .env
+.env.local
 .env.*.local
 backend/.env
-backend/.env.*
+backend/.env.local
+backend/.env.*.local
 frontend/.env
-frontend/.env.*
+frontend/.env.local
+frontend/.env.*.local
 
-# temp directory
+# Temporary directories
 .temp
 .tmp
+**/.cache
 
 # ESLint cache
 .eslintcache
@@ -67,5 +85,17 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Angular build artifacts
+/frontend/.angular
+/frontend/.cache
+
+# NestJS build artifacts
+/backend/dist
+
+
+# scripts-generated files
+backend/scripts
+

@@ -1,0 +1,150 @@
+<section class="module-shell leads-shell">
+  <header class="module-shell__header">
+    <div>
+      <span class="eyebrow">Relacionamento</span>
+      <h1>Pipeline de Leads</h1>
+      <p class="module-subtitle">Organize contatos, estágios e próximos passos sem tirar os pés do campo.</p>
+    </div>
+    <button type="button" class="module-primary-btn" (click)="openNew()">Novo lead</button>
+  </header>
+
+  <p-table
+    #dtLeads
+    class="leads-table"
+    [value]="leads()"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first} - {last} de {totalRecords} leads"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="nome">
+          Nome
+          <p-sortIcon field="nome"></p-sortIcon>
+        </th>
+        <th pSortableColumn="cpf">
+          CPF
+          <p-sortIcon field="cpf"></p-sortIcon>
+        </th>
+        <th pSortableColumn="email">
+          Email
+          <p-sortIcon field="email"></p-sortIcon>
+        </th>
+        <th pSortableColumn="telefone">
+          Telefone
+          <p-sortIcon field="telefone"></p-sortIcon>
+        </th>
+        <th pSortableColumn="status">
+          Status
+          <p-sortIcon field="status"></p-sortIcon>
+        </th>
+        <th class="actions-col">Ações</th>
+      </tr>
+      <tr>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtLeads.filter($any($event.target).value, 'nome', 'contains')"
+            placeholder="Filtrar nome"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtLeads.filter($any($event.target).value, 'cpf', 'contains')"
+            placeholder="Filtrar CPF"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtLeads.filter($any($event.target).value, 'email', 'contains')"
+            placeholder="Filtrar email"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtLeads.filter($any($event.target).value, 'telefone', 'contains')"
+            placeholder="Filtrar telefone"
+          />
+        </th>
+        <th>
+          <p-select
+            [options]="statusOptions"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Filtrar status"
+            [showClear]="true"
+            (onChange)="dtLeads.filter($event.value, 'status', 'equals')"
+          ></p-select>
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-lead>
+      <tr>
+        <td>{{ lead.nome }}</td>
+        <td>{{ lead.cpf }}</td>
+        <td>{{ lead.email }}</td>
+        <td>{{ lead.telefone }}</td>
+        <td><span class="tag-pill">{{ lead.status }}</span></td>
+        <td class="actions">
+          <button type="button" class="text-btn" (click)="editLead(lead)">Editar</button>
+          <button type="button" class="text-btn text-btn--danger" (click)="deleteLead(lead)">Excluir</button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [(visible)]="dialogVisible"
+    [modal]="true"
+    [style]="{ width: '420px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    [header]="editingLead ? 'Editar Lead' : 'Novo Lead'"
+  >
+    <form (ngSubmit)="save()" #leadForm="ngForm" class="dialog-form">
+      <label class="dialog-field">
+        <span>Nome</span>
+        <input type="text" name="nome" required [(ngModel)]="formModel.nome" />
+      </label>
+
+      <label class="dialog-field" *ngIf="!editingLead">
+        <span>CPF</span>
+        <input type="text" name="cpf" required [(ngModel)]="formModel.cpf" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Email</span>
+        <input type="email" name="email" [(ngModel)]="formModel.email" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Telefone</span>
+        <input type="text" name="telefone" [(ngModel)]="formModel.telefone" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Status</span>
+        <p-select
+          name="status"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="formModel.status"
+        ></p-select>
+      </label>
+
+      <div class="dialog-actions">
+        <button type="button" class="text-btn" (click)="dialogVisible = false">Cancelar</button>
+        <button type="submit" class="module-primary-btn" [disabled]="leadForm.invalid">Salvar</button>
+      </div>
+    </form>
+  </p-dialog>
+</section>

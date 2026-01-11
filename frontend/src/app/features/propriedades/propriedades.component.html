@@ -1,0 +1,163 @@
+<section class="module-shell propriedades-shell">
+  <header class="module-shell__header">
+    <div>
+      <span class="eyebrow">Território</span>
+      <h1>Inventário de Propriedades</h1>
+      <p class="module-subtitle">Mapeie culturas, áreas e coordenadas para apoiar o planejamento regional.</p>
+    </div>
+    <button type="button" class="module-primary-btn" (click)="openNew()">Nova propriedade</button>
+  </header>
+
+  <p-table
+    #dtProps
+    class="propriedades-table"
+    [value]="propriedades()"
+    [paginator]="true"
+    [rows]="10"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first} - {last} de {totalRecords} propriedades"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="cultura">
+          Cultura
+          <p-sortIcon field="cultura"></p-sortIcon>
+        </th>
+        <th pSortableColumn="hectares">
+          Hectares
+          <p-sortIcon field="hectares"></p-sortIcon>
+        </th>
+        <th pSortableColumn="uf">
+          UF
+          <p-sortIcon field="uf"></p-sortIcon>
+        </th>
+        <th pSortableColumn="cidade">
+          Cidade
+          <p-sortIcon field="cidade"></p-sortIcon>
+        </th>
+        <th pSortableColumn="latitude">
+          Latitude
+          <p-sortIcon field="latitude"></p-sortIcon>
+        </th>
+        <th pSortableColumn="longitude">
+          Longitude
+          <p-sortIcon field="longitude"></p-sortIcon>
+        </th>
+        <th class="actions-col">Ações</th>
+      </tr>
+      <tr>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProps.filter($any($event.target).value, 'cultura', 'contains')"
+            placeholder="Filtrar cultura"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProps.filter($any($event.target).value, 'hectares', 'equals')"
+            placeholder="Filtrar hectares"
+          />
+        </th>
+        <th>
+          <p-select
+            [options]="ufOptions"
+            placeholder="Filtrar UF"
+            [showClear]="true"
+            (onChange)="dtProps.filter($event.value, 'uf', 'equals')"
+          ></p-select>
+        </th>
+        <th>
+          <p-select
+            [options]="cidadeOptions"
+            placeholder="Filtrar cidade"
+            [showClear]="true"
+            [filter]="true"
+            filterPlaceholder="Buscar cidade"
+            (onChange)="dtProps.filter($event.value, 'cidade', 'equals')"
+          ></p-select>
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProps.filter($any($event.target).value, 'latitude', 'contains')"
+            placeholder="Filtrar latitude"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="dtProps.filter($any($event.target).value, 'longitude', 'contains')"
+            placeholder="Filtrar longitude"
+          />
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-prop>
+      <tr>
+        <td>{{ prop.cultura }}</td>
+        <td>{{ prop.hectares }}</td>
+        <td>{{ prop.uf }}</td>
+        <td>{{ prop.cidade }}</td>
+        <td>{{ prop.latitude }}</td>
+        <td>{{ prop.longitude }}</td>
+        <td class="actions">
+          <button type="button" class="text-btn" (click)="edit(prop)">Editar</button>
+          <button type="button" class="text-btn text-btn--danger" (click)="delete(prop)">Excluir</button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-dialog
+    [(visible)]="dialogVisible"
+    [modal]="true"
+    [style]="{ width: '480px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    [header]="editing ? 'Editar Propriedade' : 'Nova Propriedade'"
+  >
+    <form (ngSubmit)="save()" #propForm="ngForm" class="dialog-form">
+      <label class="dialog-field">
+        <span>Cultura</span>
+        <input type="text" name="cultura" required [(ngModel)]="formModel.cultura" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Hectares</span>
+        <input type="number" min="0" name="hectares" required [(ngModel)]="formModel.hectares" />
+      </label>
+
+      <label class="dialog-field">
+        <span>UF</span>
+        <input type="text" name="uf" maxlength="2" required [(ngModel)]="formModel.uf" />
+      </label>
+
+      <label class="dialog-field">
+        <span>Cidade</span>
+        <input type="text" name="cidade" required [(ngModel)]="formModel.cidade" />
+      </label>
+
+      <div class="dialog-field__grid">
+        <label class="dialog-field">
+          <span>Latitude</span>
+          <input type="number" name="latitude" required [(ngModel)]="formModel.latitude" />
+        </label>
+        <label class="dialog-field">
+          <span>Longitude</span>
+          <input type="number" name="longitude" required [(ngModel)]="formModel.longitude" />
+        </label>
+      </div>
+
+      <div class="dialog-actions">
+        <button type="button" class="text-btn" (click)="dialogVisible = false">Cancelar</button>
+        <button type="submit" class="module-primary-btn" [disabled]="propForm.invalid">Salvar</button>
+      </div>
+    </form>
+  </p-dialog>
+</section>
