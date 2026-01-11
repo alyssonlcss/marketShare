@@ -14,7 +14,7 @@ export class ApiService {
   private readonly auth = inject(AuthService);
 
   // Leads
-  getLeads(params?: { distribuidorId?: number | null }): Observable<Lead[]> {
+  getLeads(params?: { distribuidorId?: number }): Observable<Lead[]> {
     let httpParams = new HttpParams();
     if (params && typeof params.distribuidorId === 'number') {
       httpParams = httpParams.set('distribuidorId', String(params.distribuidorId));

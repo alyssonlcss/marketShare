@@ -6,6 +6,8 @@ import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ApiService } from '../../core/services/api.service';
+import { FilterService } from '../../core/services/filter.service';
+import { AuthService } from '../../core/services/auth.service';
 import { PropriedadeRural } from '../../core/models/propriedade-rural.model';
 
 @Component({
@@ -17,8 +19,11 @@ import { PropriedadeRural } from '../../core/models/propriedade-rural.model';
 })
 export class PropriedadesComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly filterService = inject(FilterService);
+  private readonly auth = inject(AuthService);
 
   readonly propriedades = signal<PropriedadeRural[]>([]);
+  readonly atribuicaoFilter = this.filterService.atribuicaoFilter;
 
   dialogVisible = false;
   editing: PropriedadeRural | null = null;
@@ -47,7 +52,35 @@ export class PropriedadesComponent implements OnInit {
   }
 
   load(): void {
-    this.api.getPropriedades().subscribe((data) => this.propriedades.set(data));
+    const mode = this.filterService.getAtribuicaoFilter();
+    
+    // Carrega leads com o filtro apropriado e depois extrai as propriedades
+    if (mode === 'atribuido') {
+      const user = this.auth.getCurrentUser();
+      const distribuidorId = user?.distribuidor?.id;
+      if (distribuidorId) {
+        this.api.getLeads({ distribuidorId }).subscribe((leads) => {
+          const props: PropriedadeRural[] = [];
+          for (const lead of leads) {
+            if (lead.propriedadesRurais?.length) {
+              props.push(...lead.propriedadesRurais);
+            }
+          }
+          this.propriedades.set(props);
+        });
+      }
+    } else {
+      // Não atribuído: carrega leads sem filtro de distribuidor
+      this.api.getLeads().subscribe((leads) => {
+        const props: PropriedadeRural[] = [];
+        for (const lead of leads) {
+          if (lead.propriedadesRurais?.length) {
+            props.push(...lead.propriedadesRurais);
+          }
+        }
+        this.propriedades.set(props);
+      });
+    }
   }
 
   openNew(): void {

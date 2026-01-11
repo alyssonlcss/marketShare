@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TableModule } from 'primeng/table';
@@ -6,6 +6,8 @@ import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ApiService } from '../../core/services/api.service';
+import { FilterService } from '../../core/services/filter.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Lead, LeadStatus } from '../../core/models/lead.model';
 
 @Component({
@@ -17,8 +19,11 @@ import { Lead, LeadStatus } from '../../core/models/lead.model';
 })
 export class LeadsComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly filterService = inject(FilterService);
+  private readonly auth = inject(AuthService);
 
   readonly leads = signal<Lead[]>([]);
+  readonly atribuicaoFilter = this.filterService.atribuicaoFilter;
 
   dialogVisible = false;
   editingLead: Lead | null = null;
@@ -44,7 +49,17 @@ export class LeadsComponent implements OnInit {
   }
 
   loadLeads(): void {
-    this.api.getLeads().subscribe((data) => this.leads.set(data));
+    const mode = this.filterService.getAtribuicaoFilter();
+    if (mode === 'atribuido') {
+      const user = this.auth.getCurrentUser();
+      const distribuidorId = user?.distribuidor?.id;
+      if (distribuidorId) {
+        this.api.getLeads({ distribuidorId }).subscribe((data) => this.leads.set(data));
+      }
+    } else {
+      // Não atribuído: não envia distribuidorId
+      this.api.getLeads().subscribe((data) => this.leads.set(data));
+    }
   }
 
   openNew(): void {

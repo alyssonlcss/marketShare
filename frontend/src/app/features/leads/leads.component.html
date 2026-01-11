@@ -4,6 +4,12 @@
       <span class="eyebrow">Relacionamento</span>
       <h1>Pipeline de Leads</h1>
       <p class="module-subtitle">Organize contatos, estágios e próximos passos sem tirar os pés do campo.</p>
+      <div class="filter-badge" *ngIf="atribuicaoFilter() === 'atribuido'">
+        <span class="badge badge--atribuido">Atribuído</span>
+      </div>
+      <div class="filter-badge" *ngIf="atribuicaoFilter() === 'nao_atribuido'">
+        <span class="badge badge--nao-atribuido">Não Atribuído</span>
+      </div>
     </div>
     <button type="button" class="module-primary-btn" (click)="openNew()">Novo lead</button>
   </header>

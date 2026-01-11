@@ -7,6 +7,32 @@
   color: var(--neutral-300);
 }
 
+.filter-badge {
+  margin-top: 0.8rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge--atribuido {
+  background: rgba(147, 193, 31, 0.15);
+  color: var(--agro-lime);
+  border: 1px solid rgba(147, 193, 31, 0.4);
+}
+
+.badge--nao-atribuido {
+  background: rgba(255, 138, 122, 0.15);
+  color: #ff8a7a;
+  border: 1px solid rgba(255, 138, 122, 0.4);
+}
+
 .propriedades-table ::ng-deep .p-datatable-table {
   width: 100%;
 }

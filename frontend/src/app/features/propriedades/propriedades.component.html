@@ -4,6 +4,12 @@
       <span class="eyebrow">Território</span>
       <h1>Inventário de Propriedades</h1>
       <p class="module-subtitle">Mapeie culturas, áreas e coordenadas para apoiar o planejamento regional.</p>
+      <div class="filter-badge" *ngIf="atribuicaoFilter() === 'atribuido'">
+        <span class="badge badge--atribuido">Atribuído</span>
+      </div>
+      <div class="filter-badge" *ngIf="atribuicaoFilter() === 'nao_atribuido'">
+        <span class="badge badge--nao-atribuido">Não Atribuído</span>
+      </div>
     </div>
     <button type="button" class="module-primary-btn" (click)="openNew()">Nova propriedade</button>
   </header>

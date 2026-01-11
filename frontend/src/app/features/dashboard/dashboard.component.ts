@@ -5,13 +5,13 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { SelectModule } from 'primeng/select';
 import { ApiService } from '../../core/services/api.service';
+import { FilterService, AtribuicaoFilter } from '../../core/services/filter.service';
 import { Lead } from '../../core/models/lead.model';
 import { PropriedadeRural } from '../../core/models/propriedade-rural.model';
 import { MapaPropriedadesComponent } from '../mapa-propriedades/mapa-propriedades.component';
+import { AuthService } from '../../core/services/auth.service';
 
 type PriorityFilter = 'lt100' | 'gt100' | 'gt300';
-
-type AtribuicaoFilter = 'atribuido' | 'nao_atribuido' | 'ambos';
 
 type PriorityRecord = {
   lead: Lead;
@@ -32,11 +32,12 @@ type MunicipioRecord = {
 })
 export class DashboardComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
+  protected readonly filterService = inject(FilterService);
 
   readonly leads = signal<Lead[]>([]);
-  readonly propriedades = signal<PropriedadeRural[]>([]);
 
-  readonly atribuicaoFilter = signal<AtribuicaoFilter>('ambos');
+  readonly atribuicaoFilter = this.filterService.atribuicaoFilter;
   readonly priorityFilter = signal<PriorityFilter>('gt100');
 
   // Paginação
@@ -45,17 +46,9 @@ export class DashboardComponent implements OnInit {
   readonly itemsPerPage = 10;
 
   readonly filteredLeads = computed<Lead[]>(() => {
-    const mode = this.atribuicaoFilter();
-    if (mode === 'ambos') return this.leads();
-    if (mode === 'atribuido') return this.leads().filter((l) => l.distribuidorId != null);
-    return this.leads().filter((l) => l.distribuidorId == null);
-  });
+    // Já vem filtrado da API
+    return this.leads();
 
-  readonly filteredPropriedades = computed<PropriedadeRural[]>(() => {
-    const mode = this.atribuicaoFilter();
-    if (mode === 'ambos') return this.propriedades();
-    if (mode === 'atribuido') return this.propriedades().filter((p) => p.distribuidorId != null);
-    return this.propriedades().filter((p) => p.distribuidorId == null);
   });
 
   readonly totalLeads = computed(() => this.filteredLeads().length);
@@ -66,6 +59,17 @@ export class DashboardComponent implements OnInit {
       counts[lead.status] = (counts[lead.status] || 0) + 1;
     }
     return counts;
+  });
+
+  // Extrai todas as propriedades rurais dos leads filtrados
+  readonly filteredPropriedades = computed<PropriedadeRural[]>(() => {
+    const props: PropriedadeRural[] = [];
+    for (const lead of this.filteredLeads()) {
+      if (lead.propriedadesRurais?.length) {
+        props.push(...lead.propriedadesRurais);
+      }
+    }
+    return props;
   });
 
   readonly leadsPorMunicipioOrdenado = computed(() => {
@@ -97,7 +101,6 @@ export class DashboardComponent implements OnInit {
   ];
 
   readonly atribuicaoOptions: { label: string; value: AtribuicaoFilter }[] = [
-    { label: 'Ambos', value: 'ambos' },
     { label: 'Atribuído', value: 'atribuido' },
     { label: 'Não atribuído', value: 'nao_atribuido' },
   ];
@@ -109,17 +112,15 @@ export class DashboardComponent implements OnInit {
   };
 
   readonly priorityRecords = computed<PriorityRecord[]>(() => {
-    const leadsById = new Map(this.filteredLeads().map((lead) => [lead.id, lead]));
-    return this.filteredPropriedades()
-      .map((prop) => {
-        const propLeadId = prop.leadId ?? prop.lead?.id ?? null;
-        if (propLeadId == null) {
-          return null;
+    const result: PriorityRecord[] = [];
+    for (const lead of this.filteredLeads()) {
+      if (lead.propriedadesRurais?.length) {
+        for (const propriedade of lead.propriedadesRurais) {
+          result.push({ lead, propriedade });
         }
-        const lead = leadsById.get(propLeadId);
-        return lead ? { lead, propriedade: prop } : null;
-      })
-      .filter((record): record is PriorityRecord => Boolean(record));
+      }
+    }
+    return result;
   });
 
   readonly filteredPriorities = computed<PriorityRecord[]>(() => {
@@ -144,37 +145,33 @@ export class DashboardComponent implements OnInit {
   );
 
   ngOnInit(): void {
-    // Carrega dados inicialmente com todos os acessíveis pelo backend
-    this.api.getLeads().subscribe((data) => this.leads.set(data));
-    this.api.getPropriedades().subscribe((data) => this.propriedades.set(data));
+    // Carrega dados inicialmente com o filtro padrão (não atribuído)
+    this.loadLeadsData();
+  }
+
+  private loadLeadsData(): void {
+    const mode = this.atribuicaoFilter();
+    if (mode === 'atribuido') {
+      const user = this.auth.getCurrentUser();
+      const distribuidorId = user?.distribuidor?.id;
+      if (distribuidorId) {
+        this.api.getLeads({ distribuidorId }).subscribe((data) => this.leads.set(data));
+      }
+    } else {
+      // Não atribuído: não envia distribuidorId
+      this.api.getLeads().subscribe((data) => this.leads.set(data));
+    }
   }
 
   protected changeAtribuicaoFilter(value: string): void {
     const mode = value as AtribuicaoFilter;
-    this.atribuicaoFilter.set(mode);
+    this.filterService.setAtribuicaoFilter(mode);
     // Reset paginação
     this.municipioPaginaPage.set(0);
     this.priorityPage.set(0);
 
-    if (mode === 'atribuido') {
-      const userJson = localStorage.getItem('marketshare_user');
-      if (!userJson) return;
-      try {
-        const user = JSON.parse(userJson) as { distribuidor?: { id: number } | null };
-        const distId = user.distribuidor?.id;
-        if (typeof distId === 'number') {
-          this.api.getLeads({ distribuidorId: distId }).subscribe((data) => this.leads.set(data));
-          this.api
-            .getPropriedades({ distribuidorId: distId })
-            .subscribe((data) => this.propriedades.set(data));
-        }
-      } catch {
-        // se der erro no parse, apenas mantém o filtro local
-      }
-    } else {
-      this.api.getLeads().subscribe((data) => this.leads.set(data));
-      this.api.getPropriedades().subscribe((data) => this.propriedades.set(data));
-    }
+    // Carrega dados com o filtro apropriado
+    this.loadLeadsData();
   }
 
   protected changePriorityFilter(value: string): void {

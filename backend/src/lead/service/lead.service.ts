@@ -42,13 +42,17 @@ export class LeadService {
             .leftJoinAndSelect('lead.propriedadesRurais', 'pr')
             .leftJoinAndSelect('lead.distribuidor', 'd');
 
-        qb.where(
-            '(lead.distribuidorId IS NULL ' +
-                'OR lead.distribuidorId = :distId ' +
-                'OR (lead.distribuidorId IS NOT NULL AND pr.distribuidorId IS NULL))',
-            { distId: userDistribuidorId },
-        );
+        // Cenário 1: Atribuído (distribuidorId enviado como parâmetro)
+        // Retorna leads com propriedades que pertencem a este distribuidor
+        if (typeof filters.distribuidorId === 'number') {
+            qb.andWhere('pr.distribuidorId = :fDistribuidorId', { fDistribuidorId: filters.distribuidorId });
+        } else {
+            // Cenário 2: Não atribuído (sem distribuidorId no filtro)
+            // Retorna leads que possuem propriedades SEM distribuidorId
+            qb.andWhere('pr.distribuidorId IS NULL');
+        }
 
+        // Outros filtros opcionais
         if (filters.nome) {
             qb.andWhere('LOWER(lead.nome) LIKE LOWER(:nome)', { nome: `%${filters.nome}%` });
         }
@@ -57,9 +61,6 @@ export class LeadService {
         }
         if (filters.status) {
             qb.andWhere('lead.status = :status', { status: filters.status });
-        }
-        if (typeof filters.distribuidorId === 'number') {
-            qb.andWhere('lead.distribuidorId = :fDistribuidorId', { fDistribuidorId: filters.distribuidorId });
         }
         if (filters.comentario) {
             qb.andWhere('LOWER(lead.comentario) LIKE LOWER(:comentario)', { comentario: `%${filters.comentario}%` });
@@ -70,15 +71,36 @@ export class LeadService {
         if (filters.telefone) {
             qb.andWhere('lead.telefone LIKE :telefone', { telefone: `%${filters.telefone}%` });
         }
+
         const leads = await qb.getMany();
 
-        return leads.map((lead) => {
-            const { distribuidor, ...rest } = lead as any;
-            return {
-                ...rest,
-                distribuidorId: distribuidor ? distribuidor.id : null,
-            };
-        });
+        // Filtra as propriedades rurais de cada lead conforme o cenário
+        return leads
+            .map((lead) => {
+                let filteredProperties = lead.propriedadesRurais || [];
+
+                // Aplica o mesmo filtro de cenário nas propriedades
+                if (typeof filters.distribuidorId === 'number') {
+                    // Atribuído: apenas propriedades com este distribuidorId
+                    filteredProperties = filteredProperties.filter((p) => p.distribuidorId === filters.distribuidorId);
+                } else {
+                    // Não atribuído: apenas propriedades sem distribuidorId
+                    filteredProperties = filteredProperties.filter((p) => !p.distribuidorId || p.distribuidorId === null);
+                }
+
+                // Retorna apenas leads que tem propriedades após filtrar
+                if (filteredProperties.length === 0) {
+                    return null;
+                }
+
+                const { distribuidor, ...rest } = lead as any;
+                return {
+                    ...rest,
+                    propriedadesRurais: filteredProperties,
+                    distribuidorId: distribuidor ? distribuidor.id : null,
+                };
+            })
+            .filter((lead) => lead !== null);
     }
 
     async findOne(id: number, userId: number): Promise<any> {
