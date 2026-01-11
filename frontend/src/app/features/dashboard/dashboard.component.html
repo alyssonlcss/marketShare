@@ -81,15 +81,38 @@
       </div>
 
       <div class="panel__table-scroll" (scroll)="onPriorityScroll($event)">
-        <p-table class="panel__table" [value]="prioritiesPaginadas()" [paginator]="false" [rows]="itemsPerPage">
+        <p-table
+          class="panel__table"
+          [value]="prioritiesPaginadas()"
+          [paginator]="false"
+          [rows]="itemsPerPage"
+        >
           <ng-template pTemplate="header">
             <tr>
-              <th>Nome</th>
-              <th>Cultura</th>
-              <th>Área (ha)</th>
-              <th>Telefone</th>
-              <th>Email</th>
-              <th>Status</th>
+              <th pSortableColumn="lead.nome">
+                Nome
+                <p-sortIcon field="lead.nome"></p-sortIcon>
+              </th>
+              <th pSortableColumn="propriedade.cultura">
+                Cultura
+                <p-sortIcon field="propriedade.cultura"></p-sortIcon>
+              </th>
+              <th pSortableColumn="propriedade.hectares">
+                Área (ha)
+                <p-sortIcon field="propriedade.hectares"></p-sortIcon>
+              </th>
+              <th pSortableColumn="lead.telefone">
+                Telefone
+                <p-sortIcon field="lead.telefone"></p-sortIcon>
+              </th>
+              <th pSortableColumn="lead.email">
+                Email
+                <p-sortIcon field="lead.email"></p-sortIcon>
+              </th>
+              <th pSortableColumn="lead.status">
+                Status
+                <p-sortIcon field="lead.status"></p-sortIcon>
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-record>
