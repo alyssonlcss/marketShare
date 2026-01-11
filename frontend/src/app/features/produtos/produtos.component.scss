@@ -102,6 +102,39 @@
   font-size: 0.75rem;
 }
 
+.lead-drawer {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  background: rgba(6, 18, 13, 0.9);
+  border: 1px solid rgba(147, 193, 31, 0.35);
+}
+
+.lead-drawer__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.lead-drawer__subtitle {
+  margin-top: 0.35rem;
+  color: var(--neutral-300);
+}
+
+.lead-drawer__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.lead-drawer__content {
+  margin-top: 1rem;
+}
+
+.lead-drawer__info p {
+  margin: 0.15rem 0;
+}
+
 @media (max-width: 600px) {
   .dialog-field__grid {
     flex-direction: column;

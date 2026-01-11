@@ -34,6 +34,9 @@ export class ProdutosComponent implements OnInit {
   readonly propriedades = signal<PropriedadeRural[]>([]);
   readonly atribuicaoFilter = this.filterService.atribuicaoFilter;
 
+  selectedPropriedade: PropriedadeRural | null = null;
+  selectedLead: Lead | null = null;
+
   dialogVisible = false;
   editing: Produto | null = null;
 
@@ -142,6 +145,18 @@ export class ProdutosComponent implements OnInit {
         error: (err) => this.handleError(err, 'Não foi possível carregar as propriedades não atribuídas para matching.'),
       });
     }
+  }
+
+  onMatchRowClick(item: PropriedadeMatch): void {
+    const prop = item.propriedade;
+    const lead = this.leads().find((l) => l.propriedadesRurais?.some((p) => p.id === prop.id));
+    this.selectedPropriedade = prop;
+    this.selectedLead = lead || null;
+  }
+
+  closeDrawer(): void {
+    this.selectedPropriedade = null;
+    this.selectedLead = null;
   }
 
   openNew(): void {
