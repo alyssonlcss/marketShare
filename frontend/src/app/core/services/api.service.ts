@@ -54,4 +54,17 @@ export class ApiService {
   deletePropriedade(id: number): Observable<void> {
     return this.http.delete<void>(`${API_BASE_URL}/propriedade-rural/${id}`);
   }
+
+  // Localização (IBGE)
+  getEstados(): Observable<{ id: number; sigla: string; nome: string }[]> {
+    return this.http.get<{ id: number; sigla: string; nome: string }[]>(
+      'https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome',
+    );
+  }
+
+  getCidadesPorUf(uf: string): Observable<{ id: number; nome: string }[]> {
+    return this.http.get<{ id: number; nome: string }[]>(
+      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`,
+    );
+  }
 }

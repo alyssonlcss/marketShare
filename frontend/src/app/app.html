@@ -33,4 +33,22 @@
   <main class="layout__main">
     <router-outlet></router-outlet>
   </main>
+
+  <p-dialog
+    [(visible)]="globalError.visible()"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [style]="{ width: '420px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    header="Ocorreu um erro"
+    (onHide)="globalError.hide()"
+  >
+    <div class="dialog-form">
+      <p>{{ globalError.message() }}</p>
+      <div class="dialog-actions">
+        <button type="button" class="module-primary-btn" (click)="globalError.hide()">OK</button>
+      </div>
+    </div>
+  </p-dialog>
 </div>

@@ -11,7 +11,6 @@
         <span class="badge badge--nao-atribuido">Não Atribuído</span>
       </div>
     </div>
-    <button type="button" class="module-primary-btn" (click)="openNew()">Nova propriedade</button>
   </header>
 
   <p-table
@@ -118,7 +117,7 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-prop>
-      <tr>
+      <tr (click)="onRowClick(prop)">
         <td>{{ prop.nome }}</td>
         <td>{{ prop.cultura }}</td>
         <td>{{ prop.hectares }}</td>
@@ -127,12 +126,43 @@
         <td>{{ prop.latitude }}</td>
         <td>{{ prop.longitude }}</td>
         <td class="actions">
-          <button type="button" class="text-btn" (click)="edit(prop)">Editar</button>
-          <button type="button" class="text-btn text-btn--danger" (click)="delete(prop)">Excluir</button>
+          <button type="button" class="text-btn" (click)="edit(prop); $event.stopPropagation()">Editar</button>
+          <button
+            type="button"
+            class="text-btn text-btn--danger"
+            (click)="delete(prop); $event.stopPropagation()"
+          >
+            Excluir
+          </button>
         </td>
       </tr>
     </ng-template>
   </p-table>
+
+  <section class="lead-drawer" *ngIf="selectedLead && selectedPropriedade">
+    <header class="lead-drawer__header">
+      <div>
+        <span class="eyebrow">Lead associado</span>
+        <h2>{{ selectedLead.nome }}</h2>
+        <p class="lead-drawer__subtitle">
+          {{ selectedPropriedade.cidade }}/{{ selectedPropriedade.uf }} ·
+          {{ selectedPropriedade.cultura }} · {{ selectedPropriedade.hectares | number: '1.0-0' }} ha
+        </p>
+      </div>
+      <div class="lead-drawer__actions">
+        <button type="button" class="module-primary-btn" (click)="openNewForLead()">Nova propriedade</button>
+        <button type="button" class="text-btn" (click)="closeDrawer()">Fechar</button>
+      </div>
+    </header>
+
+    <div class="lead-drawer__content">
+      <div class="lead-drawer__info">
+        <p><strong>Telefone:</strong> {{ selectedLead.telefone || '—' }}</p>
+        <p><strong>Email:</strong> {{ selectedLead.email || '—' }}</p>
+        <p><strong>Status:</strong> {{ selectedLead.status }}</p>
+      </div>
+    </div>
+  </section>
 
   <p-dialog
     [(visible)]="dialogVisible"
@@ -159,22 +189,59 @@
 
       <label class="dialog-field">
         <span>UF</span>
-        <input type="text" name="uf" maxlength="2" required [(ngModel)]="formModel.uf" />
+        <p-select
+          name="uf"
+          [options]="ufList"
+          optionLabel="nome"
+          optionValue="sigla"
+          placeholder="Selecione o estado"
+          [showClear]="true"
+          required
+          [(ngModel)]="formModel.uf"
+          (onChange)="onUfChange($event.value)"
+        ></p-select>
       </label>
 
       <label class="dialog-field">
         <span>Cidade</span>
-        <input type="text" name="cidade" required [(ngModel)]="formModel.cidade" />
+        <p-select
+          name="cidade"
+          [options]="cidadeFormOptions"
+          optionLabel="nome"
+          optionValue="nome"
+          placeholder="Selecione a cidade"
+          [showClear]="true"
+          [filter]="true"
+          filterPlaceholder="Buscar cidade"
+          required
+          [(ngModel)]="formModel.cidade"
+        ></p-select>
       </label>
 
       <div class="dialog-field__grid">
         <label class="dialog-field">
           <span>Latitude</span>
-          <input type="number" name="latitude" required [(ngModel)]="formModel.latitude" />
+          <input
+            type="number"
+            name="latitude"
+            required
+            min="-90"
+            max="90"
+            step="0.000001"
+            [(ngModel)]="formModel.latitude"
+          />
         </label>
         <label class="dialog-field">
           <span>Longitude</span>
-          <input type="number" name="longitude" required [(ngModel)]="formModel.longitude" />
+          <input
+            type="number"
+            name="longitude"
+            required
+            min="-180"
+            max="180"
+            step="0.000001"
+            [(ngModel)]="formModel.longitude"
+          />
         </label>
       </div>
 
@@ -183,5 +250,22 @@
         <button type="submit" class="module-primary-btn" [disabled]="propForm.invalid">Salvar</button>
       </div>
     </form>
+  </p-dialog>
+
+  <p-dialog
+    [(visible)]="errorDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [style]="{ width: '420px' }"
+    [contentStyle]="{ background: 'rgba(6,18,13,0.95)', borderRadius: '20px' }"
+    header="Ocorreu um erro"
+  >
+    <div class="dialog-form">
+      <p>{{ errorMessage }}</p>
+      <div class="dialog-actions">
+        <button type="button" class="module-primary-btn" (click)="errorDialogVisible = false">OK</button>
+      </div>
+    </div>
   </p-dialog>
 </section>

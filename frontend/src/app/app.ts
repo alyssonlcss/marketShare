@@ -1,19 +1,22 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
+import { DialogModule } from 'primeng/dialog';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, startWith } from 'rxjs/operators';
 import { AuthService } from './core/services/auth.service';
+import { GlobalErrorService } from './core/services/global-error.service';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, DialogModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
+  protected readonly globalError = inject(GlobalErrorService);
   protected readonly title = signal('marketshare-frontend');
   protected readonly isLoginRoute = signal(false);
 
