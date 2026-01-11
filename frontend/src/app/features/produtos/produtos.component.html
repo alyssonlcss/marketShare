@@ -112,9 +112,22 @@
     >
       <ng-template pTemplate="header">
         <tr>
-          <th>Propriedade</th>
-          <th>Cultura</th>
-          <th>Localização</th>
+          <th pSortableColumn="propriedade.nome">
+            Propriedade
+            <p-sortIcon field="propriedade.nome"></p-sortIcon>
+          </th>
+          <th pSortableColumn="propriedade.cultura">
+            Cultura
+            <p-sortIcon field="propriedade.cultura"></p-sortIcon>
+          </th>
+          <th pSortableColumn="propriedade.hectares">
+            Área (ha)
+            <p-sortIcon field="propriedade.hectares"></p-sortIcon>
+          </th>
+          <th pSortableColumn="propriedade.cidade">
+            Localização
+            <p-sortIcon field="propriedade.cidade"></p-sortIcon>
+          </th>
           <th>Produtos compatíveis</th>
         </tr>
       </ng-template>
@@ -122,6 +135,7 @@
         <tr (click)="onMatchRowClick(item)">
           <td>{{ item.propriedade.nome }}</td>
           <td>{{ item.propriedade.cultura }}</td>
+          <td>{{ item.propriedade.hectares | number: '1.0-0' }}</td>
           <td>{{ item.propriedade.cidade }}/{{ item.propriedade.uf }}</td>
           <td>
             <span class="chip" *ngFor="let p of item.produtos">{{ p.nome }}</span>
