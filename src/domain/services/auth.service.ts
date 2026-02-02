@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AuthUtils } from '../utils/auth.utils'; // Caminho já está correto, mas verifique se o arquivo existe
-import { Credentials } from '../../entities/credentials.entity';
-import { User } from '../../../user/entity/user.entity';
+import { AuthUtils } from '../auth/utils/auth.utils';
+import { Credentials } from '../entities/credentials.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Injectable()
 export class AuthService {

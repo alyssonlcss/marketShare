@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, ParseIntPipe, UsePipes, ValidationPipe, UseGuards, HttpCode, Req, Query } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { ProdutoService } from '../service/produto.service';
-import { CreateProdutoDto } from '../dto/create-produto.dto';
-import { UpdateProdutoDto } from '../dto/update-produto.dto';
-import { FilterProdutoDto } from '../dto/filter-produto.dto';
+import { JwtAuthGuard } from '../../../domain/auth/guard/jwt-auth.guard';
+import { ProdutoService } from '../../../domain/services/produto.service';
+import { CreateProdutoDto } from '../../../application/dto/create-produto.dto';
+import { UpdateProdutoDto } from '../../../application/dto/update-produto.dto';
+import { FilterProdutoDto } from '../../../application/dto/filter-produto.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('produto')

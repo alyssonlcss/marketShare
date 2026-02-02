@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, ParseIntPipe, UsePipes, ValidationPipe, UseGuards, HttpCode, Req, Query } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { PropriedadeRuralService } from '../service/propriedade-rural.service';
-import { CreatePropriedadeRuralDto } from '../dto/create-propriedade-rural.dto';
-import { UpdatePropriedadeRuralDto } from '../dto/update-propriedade-rural.dto';
-import { FilterPropriedadeRuralDto } from '../dto/filter-propriedade-rural.dto';
+import { JwtAuthGuard } from '../../../domain/auth/guard/jwt-auth.guard';
+import { PropriedadeRuralService } from '../../../domain/services/propriedade-rural.service';
+import { CreatePropriedadeRuralDto } from '../../../application/dto/create-propriedade-rural.dto';
+import { UpdatePropriedadeRuralDto } from '../../../application/dto/update-propriedade-rural.dto';
+import { FilterPropriedadeRuralDto } from '../../../application/dto/filter-propriedade-rural.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('propriedade-rural')

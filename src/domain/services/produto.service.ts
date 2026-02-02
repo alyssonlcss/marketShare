@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Produto } from '../entities/produto.entity';
 import { Distribuidor } from '../entities/distribuidor.entity';
-import { CreateProdutoDto } from '../dto/create-produto.dto';
-import { UpdateProdutoDto } from '../dto/update-produto.dto';
+import { CreateProdutoDto } from '../../application/dto/create-produto.dto';
+import { UpdateProdutoDto } from '../../application/dto/update-produto.dto';
 import { User } from '../../user/entity/user.entity';
-import { FilterProdutoDto } from '../dto/filter-produto.dto';
+import { FilterProdutoDto } from '../../application/dto/filter-produto.dto';
 
 @Injectable()
 export class ProdutoService {

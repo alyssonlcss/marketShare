@@ -5,18 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Lead } from './domain/entities/lead.entity';
-import { PropriedadeRural } from './propriedade-rural/entity/propriedade-rural.entity';
+import { PropriedadeRural } from './domain/entities/propriedade-rural.entity';
 import { Distribuidor } from './domain/entities/distribuidor.entity';
-import { DistribuidorModule } from './distribuidor/module/distribuidor.module';
 import { Produto } from './domain/entities/produto.entity';
 import { User } from './user/entity/user.entity';
 import { Credentials } from './domain/entities/credentials.entity';
-import { LeadModule } from './lead/module/lead.module';
-import { PropriedadeRuralModule } from './propriedade-rural/module/propriedade-rural.module';
-import { ProdutoModule } from './produto/module/produto.module';
 import { AuthModule } from './domain/auth/module/auth.module';
-import { UserModule } from './user/module/user.module';
-import { CredentialsModule } from './credentials/module/credentials.module';
 
 @Module({
   imports: [
@@ -36,14 +30,8 @@ import { CredentialsModule } from './credentials/module/credentials.module';
         synchronize: true, // Em produção usaria migrations invés de synchronize
       }),
     }),
-    LeadModule,
-    TypeOrmModule.forFeature([Lead, PropriedadeRural, Distribuidor, User, Credentials]),
-    PropriedadeRuralModule,
-    ProdutoModule,
+    TypeOrmModule.forFeature([Lead, PropriedadeRural, Distribuidor, Produto, User, Credentials]),
     AuthModule,
-    UserModule,
-    CredentialsModule,
-    DistribuidorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

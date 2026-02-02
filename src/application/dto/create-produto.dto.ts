@@ -1,5 +1,5 @@
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { UnidadeMedida } from '../entity/produto.entity';
+import { UnidadeMedida } from "../../domain/entities/produto.entity";
 
 export class CreateProdutoDto {
   @IsString()

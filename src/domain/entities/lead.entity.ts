@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
-import { PropriedadeRural } from '../../propriedade-rural/entity/propriedade-rural.entity';
+import { PropriedadeRural } from './propriedade-rural.entity';
 import { Distribuidor } from './distribuidor.entity';
 
 export enum LeadStatus {

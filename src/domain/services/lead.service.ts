@@ -2,11 +2,11 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Lead } from '../entities/lead.entity';
-import { CreateLeadDto } from '../dto/create-lead.dto';
-import { UpdateLeadDto } from '../dto/update-lead.dto';
+import { CreateLeadDto } from '../../application/dto/create-lead.dto';
+import { UpdateLeadDto } from '../../application/dto/update-lead.dto';
 import { User } from '../../user/entity/user.entity';
-import { FilterLeadDto } from '../dto/filter-lead.dto';
-import { PropriedadeRural } from '../../propriedade-rural/entity/propriedade-rural.entity';
+import { FilterLeadDto } from '../../application/dto/filter-lead.dto';
+import { PropriedadeRural } from '../entities/propriedade-rural.entity';
 
 @Injectable()
 export class LeadService {

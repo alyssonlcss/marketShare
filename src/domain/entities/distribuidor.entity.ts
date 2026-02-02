@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Produto } from './produto.entity';
-import { PropriedadeRural } from '../../propriedade-rural/entity/propriedade-rural.entity';
+import { PropriedadeRural } from './propriedade-rural.entity';
 import { Lead } from './lead.entity';
 
 @Entity()

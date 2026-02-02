@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, ParseIntPipe, UsePipes, ValidationPipe, UseGuards, HttpCode, Req, Query } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guard/jwt-auth.guard';
-import { LeadService } from '../service/lead.service';
-import { CreateLeadDto } from '../dto/create-lead.dto';
-import { UpdateLeadDto } from '../dto/update-lead.dto';
-import { FilterLeadDto } from '../dto/filter-lead.dto';
+import { JwtAuthGuard } from '../../../domain/auth/guard/jwt-auth.guard';
+import { LeadService } from '../../../domain/services/lead.service';
+import { CreateLeadDto } from '../../../application/dto/create-lead.dto';
+import { UpdateLeadDto } from '../../../application/dto/update-lead.dto';
+import { FilterLeadDto } from '../../../application/dto/filter-lead.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('lead')

@@ -1,7 +1,7 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Matches, ValidateNested, IsIn } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { LeadStatus } from '../entity/lead.entity';
-import { IsCPF } from '../utils/cpf.validator';
+import { LeadStatus } from "../../domain/entities/lead.entity";
+import { IsCPF } from '../../shared/common/cpf.validator';
 
 export class CreateLeadPropriedadeDto {
   @IsString()
