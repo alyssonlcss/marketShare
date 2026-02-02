@@ -3,13 +3,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { Distribuidor } from './../src/distribuidor/entity/distribuidor.entity';
+import { Distribuidor } from '../src/domain/entities/distribuidor.entity';
 import { User } from './../src/user/entity/user.entity';
-import { Credentials } from './../src/credentials/entity/credentials.entity';
-import { Produto } from './../src/produto/entity/produto.entity';
-import { Lead } from './../src/lead/entity/lead.entity';
+import { Credentials } from '../src/domain/entities/credentials.entity';
+import { Produto } from '../src/domain/entities/produto.entity';
+import { Lead } from '../src/domain/entities/lead.entity';
 import { PropriedadeRural } from './../src/propriedade-rural/entity/propriedade-rural.entity';
-import { AuthUtils } from './../src/auth/utils/auth.utils';
+import { AuthUtils } from '../src/domain/auth/utils/auth.utils';
 
 describe('App (e2e)', () => {
   let app: INestApplication;

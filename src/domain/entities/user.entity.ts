@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Distribuidor } from '../../domain/entities/distribuidor.entity';
+import { Distribuidor } from './distribuidor.entity';
 
 @Entity()
 export class User {
